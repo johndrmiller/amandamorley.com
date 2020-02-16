@@ -1,5 +1,53 @@
 /*Starting with smallest responsive state, vertical phone*/
 /*Global Elements*/
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-Thin.ttf");
+    font-weight: 100;
+    font-style: normal;
+}
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-ExtraLight.ttf");
+    font-weight: 200;
+    font-style: normal;
+}
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-Light.ttf");
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-Medium.ttf");
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-Bold.ttf");
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-ExtraBold.ttf");
+    font-weight: 800;
+    font-style: normal;
+}
+@font-face {
+    font-family:Arima Madurai;
+    src: url("../fonts/ArimaMadurai-Black.ttf");
+    font-weight: 900;
+    font-style: normal;
+}
 * {
     box-sizing: border-box;
 }
@@ -574,6 +622,12 @@ body {
                 }
 
 /*End About Page*/
+}
+@media only screen and (min-width: 768px) {
+    #circleMask {
+        border: 8px solid #8D6B54;
+        border-width: 16px 5px;
+    }
 }
 
 @media only screen and (min-width: 768px) and (max-aspect-ratio: 11/10){
