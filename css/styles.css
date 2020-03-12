@@ -233,6 +233,7 @@ body {
         }
         #image-details header #image-title {
             justify-self: end;
+            font-style: italic;
         }
         #closebox {
             width:1.5em;
@@ -330,8 +331,9 @@ body {
             justify-self: center;
             justify-content: space-between; 
             align-items: center;
-            height: 35px;       
-            background-color: #30170E;       
+            height: min-content;       
+            background-color: #30170E;
+            text-align: center;       
         }
             #portfolioSubnav a {
                 color:white;
@@ -403,6 +405,8 @@ body {
                 width: 100vw;
                 height: 100%;
                 padding: 10px 5px 0;
+                padding-left: 8vw;
+                padding-right:8vw;
 
             }
                 #email-link {
@@ -419,7 +423,7 @@ body {
                     float: left;
                 }
                     #profile-picture img {
-                        width: 155px;
+                        width: 170px;
                         height:auto;
                         display:block;
                     }
@@ -466,7 +470,9 @@ body {
             #about-content-container {
                 display: grid;
                 padding: 5px 5px;
-                grid-template-columns: 20% 80%;
+                padding-left: 10vw;
+                padding-right: 10vw;
+                grid-template-columns: 40% 60%;
                 grid-template-rows: 20px auto;
                 column-gap: 10px; 
             }
@@ -597,7 +603,7 @@ body {
             #about-content-container {
                 padding-left: 10vw;
                 padding-right: 10vw;
-                grid-template-columns: 35% 65%;
+                grid-template-columns: 45% 55%;
                 grid-template-rows: 40px auto;
                 column-gap: 15px; 
                 margin-top: 20px;
@@ -865,10 +871,12 @@ body {
 
 /*About Page Specific*/
             #about-content-container {
-                padding-left: 22vw;
-                padding-right: 22vw;
+                padding-left: 15vw;
+                padding-right: 15vw;
                 font-size: 1.25em;
                 line-height: 1.5em; 
+                grid-template-columns: 40% 60%;
+
             }
 /*End About Page*/
 }
@@ -950,12 +958,14 @@ body {
 
 /*About Page Specific*/
             #about-content-container {
-                padding-left: 30vw;
-                padding-right: 30vw;
+                padding-left: 20vw;
+                padding-right: 20vw;
                 font-size: 1.25em;
                 line-height: 1.5em; 
                 column-gap: 30px;
                 grid-template-rows: 50px auto;
+                grid-template-columns: 40% 60%;
+
             }
 /*End About Page*/         
 }

@@ -81,9 +81,49 @@ window.onload = function() {
     function imageCalcs(e) {
         let natH = imageEnlargement.naturalHeight;
         let natW = imageEnlargement.naturalWidth;
+        let imContStyle, currentRatio, imageAreaBox, imageHeight, imageWidth, imageAreaHeight, imageAreaWidth;
         imageProportion = natW/natH;
 
-        imageProportion < 1 ? imageContainer.style.height = "80%" : imageContainer.style.width = "80%";
+        /**
+            *! If image is horizontal, need to check and see if height of image at 90% width is greater than the height of the preview area. If so, set height to 90% instead.
+            *! If image is vertical, need to check and see if width of image at 90% height is greater than the width of the preview area. If so, set width to 90% instead.
+            *! imageProportion > 1 is horizontal; imageProportion < 1 is vertical
+            *! Need to figure out how tall or wide image is when width or height is at 90% of image area. 
+            *! imageAreaBox.width/height*0.9 = image width/height;  r = w/h, rh = w, w/r = h
+            *! imageProportion/image width = image height
+            *! imageProportion*image height = image width
+            
+            //imageProportion < 1 ? imageContainer.style.height = "90%" : imageContainer.style.width = "90%";
+
+            // if ((imageProportion < 1)) {
+            //     imageContainer.style.height = "90%";
+            //     console.log("one");
+            // } else if (imageProportion > 1) {
+            //     imageContainer.style.width = "90%";
+            //     console.log("two");
+            // }
+            
+        */
+        imageView.style.opacity = 0;
+        imageView.style.display = "flex";
+        
+        imageAreaBox = window.getComputedStyle(imageArea);
+        imageAreaHeight = parseInt(imageAreaBox.height);
+        imageAreaWidth = parseInt(imageAreaBox.width);
+
+        if (imageProportion <= 1) {
+            imageHeight = imageAreaHeight*0.9;
+            imageWidth = imageProportion*imageHeight;
+        } else if (imageProportion > 1) {
+            imageWidth = imageAreaWidth*0.9;
+            imageHeight = imageWidth/imageProportion;
+        }
+
+        if ((imageProportion <= 1 && imageAreaWidth > imageWidth) || (imageProportion > 1 && imageAreaHeight < imageHeight)) {
+            imageContainer.style.height = "90%";
+        } else if ((imageProportion > 1 && imageAreaHeight > imageHeight) || (imageProportion <= 1 && imageAreaWidth < imageWidth)) {
+            imageContainer.style.width = "90%";
+        }
 
         if (window.visualViewport.scale > 1.0) {
             let modifier = 1/window.visualViewport.scale;
@@ -94,11 +134,9 @@ window.onload = function() {
             groupListeners([{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"add", opts:{passive:false}}]);
         }
 
-        let imContStyle = window.getComputedStyle(imageContainer);
-        let currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
+        imContStyle = window.getComputedStyle(imageContainer);
+        currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
 
-        imageView.style.opacity = 0;
-        imageView.style.display = "flex";
         imageContAdjustment(imageProportion, currentRatio, imContStyle.width, imContStyle.height);   
         imageView.addEventListener("animationend",finalize);
         imageView.classList.add("image-details-appear");
@@ -226,7 +264,6 @@ window.onload = function() {
             prevDiff = curDiff; 
         }
         if (evCache.length == 1) {
-            console.log("yes");
             stopZoomScroll(ev);
             let currentPos = {
                 clientX: ev.clientX,
