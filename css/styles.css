@@ -390,7 +390,8 @@ body {
             }
             .gallery .galleryImage {
                 width:145px;
-                height: 170px;
+                height: 185px;
+                overflow:hidden;
             }
     footer.portfolioFooter {
         margin-top: 5px;
@@ -594,7 +595,7 @@ body {
         }
         .gallery .galleryImage {
             width:216px;
-            height: 250px;
+            height: 275px;
             overflow-y: hidden;
         }
 /*End Portfolio Page*/ 
@@ -791,9 +792,6 @@ body {
             .galleryImages {
                 width: 864px;
             }
-            .gallery .galleryImage {
-                height: 275px;
-            }
 /*End Portfolio Page*/           
 }
 
@@ -952,7 +950,7 @@ body {
             }
             .gallery .galleryImage {
                 width:300px;
-                height: 380px;
+                height: 382px;
             }
 /*End Portfolio Page*/  
 
