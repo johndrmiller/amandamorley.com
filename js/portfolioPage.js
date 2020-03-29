@@ -18,7 +18,8 @@ window.onload = function() {
     var galleryImages = currentGallery.getElementsByClassName("galleryImages")[0];
     var imageProportion,startingEvCoords = {};
 
-    //*takes array of objects[{ele:element, ev:event, fun:function, action:("add" or "remove"), opts:(optional, {} or options object)}], if element or event is an array, function runs through elements first, then events.
+    //*takes array of objects[{ele:element, ev:event, fun:function, action:("add" or "remove"), opts:(optional, {} or options object)}]
+    //*if element or event is an array, function runs through elements first, then events.
     const groupListeners = (arr) => {
         for (let i in arr) { 
             let ops = arr[i].opts || {};
@@ -35,6 +36,7 @@ window.onload = function() {
             }
         }
     }
+
     //******************Begin Tab Switching Section******************//
     function closeOldGallery(e) {
         let clickedTab = e.target;
@@ -53,11 +55,13 @@ window.onload = function() {
         clickedTab.classList.add("selectedGallery");
         currentTab = clickedTab;  
     }
+
     function openNewGallery (nextGallery) {
         nextGallery.classList.add("showingGallery", "gallery-fade-in");
         currentGallery.classList.remove("showingGallery", "gallery-fade-out");
         nextGallery.addEventListener("animationend", resolveAndReset);
     }
+
     function resolveAndReset(e) {
         currentGallery = e.target;
         galleryImages = currentGallery.getElementsByClassName("galleryImages")[0];
@@ -79,31 +83,16 @@ window.onload = function() {
     }
     
     function imageCalcs(e) {
+        //*setting up sizes and position of image preview modal and content
         let natH = imageEnlargement.naturalHeight;
         let natW = imageEnlargement.naturalWidth;
-        let imContStyle, currentRatio, imageAreaBox, imageHeight, imageWidth, imageAreaHeight, imageAreaWidth;
+        let imContStyle, currentRatio, imageAreaBox, imageAreaHeight, imageAreaWidth, imageHeight, imageWidth;
+
+        //*disabling native browser resizing for custom implementation
+        groupListeners([{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"add", opts:{passive:false}}]);
+        
         imageProportion = natW/natH;
 
-        /**
-            *! If image is horizontal, need to check and see if height of image at 90% width is greater than the height of the preview area. If so, set height to 90% instead.
-            *! If image is vertical, need to check and see if width of image at 90% height is greater than the width of the preview area. If so, set width to 90% instead.
-            *! imageProportion > 1 is horizontal; imageProportion < 1 is vertical
-            *! Need to figure out how tall or wide image is when width or height is at 90% of image area. 
-            *! imageAreaBox.width/height*0.9 = image width/height;  r = w/h, rh = w, w/r = h
-            *! imageProportion/image width = image height
-            *! imageProportion*image height = image width
-            
-            //imageProportion < 1 ? imageContainer.style.height = "90%" : imageContainer.style.width = "90%";
-
-            // if ((imageProportion < 1)) {
-            //     imageContainer.style.height = "90%";
-            //     console.log("one");
-            // } else if (imageProportion > 1) {
-            //     imageContainer.style.width = "90%";
-            //     console.log("two");
-            // }
-            
-        */
         imageView.style.opacity = 0;
         imageView.style.display = "flex";
         
@@ -111,6 +100,7 @@ window.onload = function() {
         imageAreaHeight = parseInt(imageAreaBox.height);
         imageAreaWidth = parseInt(imageAreaBox.width);
 
+        //*checking if image is horizontal or vertical, then calculating display w and h of image based on 90% of available width or height
         if (imageProportion <= 1) {
             imageHeight = imageAreaHeight*0.9;
             imageWidth = imageProportion*imageHeight;
@@ -119,6 +109,7 @@ window.onload = function() {
             imageHeight = imageWidth/imageProportion;
         }
 
+        //*setting height or width of image, checks to make sure full image will fit within previw area
         if ((imageProportion <= 1 && imageAreaWidth > imageWidth) || (imageProportion > 1 && imageAreaHeight < imageHeight)) {
             imageContainer.style.height = "90%";
         } else if ((imageProportion > 1 && imageAreaHeight > imageHeight) || (imageProportion <= 1 && imageAreaWidth < imageWidth)) {
@@ -126,14 +117,9 @@ window.onload = function() {
         }
 
         if (window.visualViewport.scale > 1.0) {
-            let modifier = 1/window.visualViewport.scale;
-            let ivStyles = window.getComputedStyle(imageView);
-            let ivHeaderStyles = window.getComputedStyle(ivHeader);
-            imageView.style = `width: ${modifier*100}vw; height:${modifier*100}vh; top:${window.visualViewport.offsetTop}px; left:${window.visualViewport.offsetLeft}px; font-size:${parseInt(ivStyles.getPropertyValue("font-size"))*modifier}px;`;
-            ivHeader.style = `padding-top: ${parseInt(ivHeaderStyles.getPropertyValue("padding-top"))*modifier}px; padding-bottom: ${parseInt(ivHeaderStyles.getPropertyValue("padding-bottom"))*modifier}px;`
-            groupListeners([{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"add", opts:{passive:false}}]);
+            scaleCorrection();
         }
-
+        
         imContStyle = window.getComputedStyle(imageContainer);
         currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
 
@@ -141,13 +127,25 @@ window.onload = function() {
         imageView.addEventListener("animationend",finalize);
         imageView.classList.add("image-details-appear");
     }
-    //if img and its container aren't the same ratio, the container is updated to match the image 
+
+    //*adjusting size of modal elements based on viewport scale to make sure everything is visible on screen
+    function scaleCorrection() {
+        let modifier = 1/window.visualViewport.scale;
+        let ivStyles = window.getComputedStyle(imageView);
+        let ivHeaderStyles = window.getComputedStyle(ivHeader);
+        imageView.style = `width: ${modifier*100}vw; height:${modifier*100}vh; top:${window.visualViewport.offsetTop}px; left:${window.visualViewport.offsetLeft}px; font-size:${parseInt(ivStyles.getPropertyValue("font-size"))*modifier}px;`;
+        ivHeader.style = `padding-top: ${parseInt(ivHeaderStyles.getPropertyValue("padding-top"))*modifier}px; padding-bottom: ${parseInt(ivHeaderStyles.getPropertyValue("padding-bottom"))*modifier}px;`;
+    }
+
+    //*if img and its container aren't the same ratio, the container is updated to match the image 
     function imageContAdjustment(image, current, width, height) {
         current < image ? imageContainer.style.height = parseInt(width)*(1/image)+"px" : imageContainer.style.width = image*parseInt(height)+"px";
     }
+
     function stopZoomScroll(e) {
         e.preventDefault();
     }
+
     function finalize(e) {
         imageView.style.opacity = 1;
         imageView.removeEventListener("animationend",finalize);
@@ -157,6 +155,7 @@ window.onload = function() {
         imageArea.addEventListener("wheel", wheel_handler);
         groupListeners([{ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"add"}]);
     }
+
     function closePreview(e) {
         imageView.style = ivHeader.style = imageContainer.style = "";
         imageArea.removeEventListener("pointerdown", pointerdown_handler);
@@ -164,10 +163,12 @@ window.onload = function() {
         imageArea.removeEventListener("wheel", wheel_handler);
         groupListeners([{ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"remove"},{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"remove", opts:{passive:false}}]);
     }
+
         //******************Zoom Stuff******************//
     var evCache = new Array();
     var prevDiff = -1;
     
+    //*Generates attaches then removes css animation for when image reaches max or min size
     function sizedOut(){
         imageEnlargement.addEventListener("animationend",function removeAnimation(e) {
             imageEnlargement.classList.remove("size-out");
@@ -175,19 +176,22 @@ window.onload = function() {
         });
         imageEnlargement.classList.add("size-out");
     }
+
+    //*resizing image preview using touch or mouse wheel
     function imageResize(growCondition, shrinkCondition){
         imageArea.removeEventListener("pointermove", pointermove_handler);
         let imContStyles = window.getComputedStyle(imageContainer);
         let containerHeight = parseInt(imContStyles.getPropertyValue("height"));
         let containerWidth = parseInt(imContStyles.getPropertyValue("width"));
+        let moveVal = 10;
         if (growCondition) {
             if (containerHeight>=1500 || containerWidth>=1500) {
                 sizedOut();
                 imageArea.addEventListener("pointermove", pointermove_handler);
                 return;
             }
-            imageContainer.style.width = `${containerWidth + 10}px`;
-            imageContainer.style.height = `${containerHeight + 10}px`;
+            imageContainer.style.width = `${containerWidth + moveVal}px`;
+            imageContainer.style.height = `${containerHeight + moveVal}px`;
         } else if (shrinkCondition) {
             if (containerHeight<=200 || containerWidth<=200) {
                 sizedOut();
@@ -228,8 +232,8 @@ window.onload = function() {
                 shiftImagePosition(boundaryVals.shortSide);
                 shiftImagePosition(boundaryVals.longSide);
             }
-            imageContainer.style.width = `${containerWidth - 10}px`;
-            imageContainer.style.height = `${containerHeight - 10}px`;
+            imageContainer.style.width = `${containerWidth - moveVal}px`;
+            imageContainer.style.height = `${containerHeight - moveVal}px`;
         }
         let recalcHeight = parseInt(window.getComputedStyle(imageContainer).getPropertyValue("height"));
         let recalcWidth = parseInt(window.getComputedStyle(imageContainer).getPropertyValue("width"));
@@ -237,17 +241,21 @@ window.onload = function() {
         imageArea.addEventListener("pointermove", pointermove_handler);
         imageContAdjustment(imageProportion, recalcRatio, recalcWidth, recalcHeight);
     }
+
     function propIsNonZero(prop) {
         return prop != "" &&  prop != "0px";
     }
-    function firstIsLonger(height, width) {
-        return height > width;
+
+    function firstIsLonger(first, second) {
+        return first > second;
     }
+
     function pointerdown_handler(ev) {
         evCache.push(ev);
         startingEvCoords.clientX = ev.clientX;
         startingEvCoords.clientY = ev.clientY;
     }
+
     function pointermove_handler(ev) {
         for (var i = 0; i < evCache.length; i++) {
             if (ev.pointerId == evCache[i].pointerId) {
@@ -299,7 +307,7 @@ window.onload = function() {
             }
         }
     }
-            //******************Drag Stuff******************//
+    //******************Drag Stuff******************//
     function sizeCheck() {
         let imageAreaStyles = window.getComputedStyle(imageArea);
         let imageAreaDimensions = {
