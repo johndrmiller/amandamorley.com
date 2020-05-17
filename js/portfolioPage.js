@@ -1,9 +1,19 @@
+/*
+    * This file is divided into sections
+    *   Variable declaration - Beginning
+    *   Group listeners function - around line 35
+    *   The section that controls the switching of the different gallery types (or "tabs") - around line 55
+    *   The image preview section - around line 90
+    *       The image preview section has several distinct parts as well:
+    *       Changing images in preview - around line 110
+    *       Zooming in and out of images - around line 240
+    *       Dragging the image - around line 380
+*/
 window.onload = function() {
     //*gallery page elements
-    const tabs = document.getElementById("portfolioSubnav").getElementsByTagName("a");
-    const tabsArr = [].slice.call(tabs);
-    const galleries = document.getElementsByClassName("gallery");
-    const galleriesArr = [].slice.call(galleries);
+    const tabsArr = [...document.getElementById("portfolioSubnav").getElementsByTagName("a")];
+    const galleriesArr = [...document.getElementsByClassName("gallery")];
+    const imageCollections= {};
     //*image preview elements
     const imageView = document.getElementById("image-details");
     const ivHeader = imageView.getElementsByTagName("header")[0];
@@ -12,11 +22,15 @@ window.onload = function() {
     const imageArea = imageView.querySelector("#image-display");
     const imageContainer = imageArea.querySelector("#image-container");
     const imageEnlargement = imageContainer.querySelector("#image-image");
+    const imageNavButtons = [...this.document.getElementsByClassName("hitbox")];
+    const previousButton = imageNavButtons.filter(item => item.id == "previousButtonImage")[0];
+    const nextButton = imageNavButtons.filter(item => item.id == "nextButtonImage")[0];
     //*page variables
     var currentTab = tabsArr.filter(tab => tab.classList.contains("selectedGallery"))[0];
     var currentGallery = galleriesArr.filter(gallery => gallery.classList.contains("showingGallery"))[0];
-    var galleryImages = currentGallery.getElementsByClassName("galleryImages")[0];
-    var imageProportion,startingEvCoords = {};
+    var galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
+    var lastGalleryIndex = galleryImages.length - 1;
+    var imageProportion, currentImage, currentImageIndex, startingEvCoords = {};
 
     //*takes array of objects[{ele:element, ev:event, fun:function, action:("add" or "remove"), opts:(optional, {} or options object)}]
     //*if element or event is an array, function runs through elements first, then events.
@@ -49,8 +63,7 @@ window.onload = function() {
         currentGallery.classList.add("gallery-fade-out");  
         currentGallery.addEventListener('animationend', function sendToNextFunction(e){
             openNewGallery(nextGallery);
-            currentGallery.removeEventListener('animationend', sendToNextFunction);
-        });
+        }, {once: true});
         currentTab.classList.remove("selectedGallery");
         clickedTab.classList.add("selectedGallery");
         currentTab = clickedTab;  
@@ -59,12 +72,13 @@ window.onload = function() {
     function openNewGallery (nextGallery) {
         nextGallery.classList.add("showingGallery", "gallery-fade-in");
         currentGallery.classList.remove("showingGallery", "gallery-fade-out");
-        nextGallery.addEventListener("animationend", resolveAndReset);
+        nextGallery.addEventListener("animationend", resolveAndReset, {once:true});
     }
 
     function resolveAndReset(e) {
         currentGallery = e.target;
-        galleryImages = currentGallery.getElementsByClassName("galleryImages")[0];
+        galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
+        lastGalleryIndex = galleryImages.length - 1;
         e.target.removeEventListener("animationend", resolveAndReset);
         e.target.style = "";
         e.target.classList.remove("gallery-fade-in");
@@ -73,33 +87,90 @@ window.onload = function() {
     //******************End Tab Switching Section******************//
 
     //******************Begin Image Preview Section******************//
+    function imageSetup(e) {
+        
+    }
     function expandImage(e) {
         let infoNode = e.target.parentNode.parentNode;
-        
+        currentImageIndex = galleryImages.indexOf(infoNode);
+        imageView.style.opacity = 0;
+        imageView.style.display = "flex";
         closeBox.addEventListener("click", closePreview);
-        imageEnlargement.addEventListener("load",imageCalcs);
+        imageEnlargement.addEventListener("load", function(e) {
+            imageCalcs(e);
+            imageView.addEventListener("animationend",finalize);
+            imageView.classList.add("image-details-appear");
+        }, {once:true});
         imageEnlargement.src = infoNode.dataset.imageFile;
-        imageTitle.textContent = infoNode.dataset.imageName;
+        imageTitle.textContent = infoNode.dataset.imageName; 
     }
-    
+    //******************Change Image Stuff******************//
+    function changeImage(e){
+        for (button of imageNavButtons) {
+            button.removeEventListener("click", changeImage);
+        }
+        
+        switch (e.currentTarget) {
+            case previousButton:
+                if (currentImageIndex == 0) {
+                    currentImageIndex = lastGalleryIndex;
+                } else {
+                    currentImageIndex -= 1;
+                }
+                break;
+            case nextButton:
+                if (currentImageIndex == lastGalleryIndex) {
+                    currentImageIndex = 0;
+                } else {
+                    currentImageIndex += 1;
+                }
+                break;
+        }
+
+        imageEnlargement.addEventListener("animationend", openNewImage, {once:true});
+        imageEnlargement.classList.add("image-details-disappear");
+
+        function openNewImage(e) {
+            console.log("test");
+            console.log(e);
+            imageEnlargement.style.opacity="0";
+            imageEnlargement.classList.remove("image-details-disappear");
+
+            imageEnlargement.addEventListener("load", function(e) {
+                imageCalcs(e);
+                imageEnlargement.addEventListener("animationend", wrapUp);
+                imageEnlargement.classList.add("image-details-appear"); 
+            }, {once:true});
+            imageEnlargement.src = galleryImages[currentImageIndex].dataset.imageFile;
+            imageTitle.textContent = galleryImages[currentImageIndex].dataset.imageName;
+        }
+        function wrapUp(e) {
+            console.log("wrap-up")
+            console.log(e);      ;
+            imageEnlargement.style.opacity= "";
+            imageEnlargement.classList.remove("image-details-appear");
+            for (button of imageNavButtons) {
+                button.addEventListener("click", changeImage);
+            }
+        }
+    }
+    //******************End change Image Stuff******************//
     function imageCalcs(e) {
         //*setting up sizes and position of image preview modal and content
+        console.log("thing");
+        console.log(e);
         let natH = imageEnlargement.naturalHeight;
         let natW = imageEnlargement.naturalWidth;
-        let imContStyle, currentRatio, imageAreaBox, imageAreaHeight, imageAreaWidth, imageHeight, imageWidth;
+        let imageAreaBox = window.getComputedStyle(imageArea);
+        let imageAreaHeight = parseInt(imageAreaBox.height);
+        let imageAreaWidth = parseInt(imageAreaBox.width);
+        let imContStyle, currentRatio, imageHeight, imageWidth;
+
+        imageProportion = natW/natH;
 
         //*disabling native browser resizing for custom implementation
         groupListeners([{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"add", opts:{passive:false}}]);
         
-        imageProportion = natW/natH;
-
-        imageView.style.opacity = 0;
-        imageView.style.display = "flex";
-        
-        imageAreaBox = window.getComputedStyle(imageArea);
-        imageAreaHeight = parseInt(imageAreaBox.height);
-        imageAreaWidth = parseInt(imageAreaBox.width);
-
         //*checking if image is horizontal or vertical, then calculating display w and h of image based on 90% of available width or height
         if (imageProportion <= 1) {
             imageHeight = imageAreaHeight*0.9;
@@ -124,8 +195,8 @@ window.onload = function() {
         currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
 
         imageContAdjustment(imageProportion, currentRatio, imContStyle.width, imContStyle.height);   
-        imageView.addEventListener("animationend",finalize);
-        imageView.classList.add("image-details-appear");
+        /* imageView.addEventListener("animationend",finalize);
+        imageView.classList.add("image-details-appear"); */
     }
 
     //*adjusting size of modal elements based on viewport scale to make sure everything is visible on screen
@@ -154,6 +225,9 @@ window.onload = function() {
         imageArea.addEventListener("pointermove", pointermove_handler);
         imageArea.addEventListener("wheel", wheel_handler);
         groupListeners([{ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"add"}]);
+        for (button of imageNavButtons) {
+            button.addEventListener("click", changeImage);
+        }
     }
 
     function closePreview(e) {
@@ -164,7 +238,7 @@ window.onload = function() {
         groupListeners([{ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"remove"},{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"remove", opts:{passive:false}}]);
     }
 
-        //******************Zoom Stuff******************//
+    //******************Zoom Stuff******************//
     var evCache = new Array();
     var prevDiff = -1;
     
@@ -372,8 +446,8 @@ window.onload = function() {
         startingCoords.clientY = currentCoords.clientY;
         imageArea.addEventListener("pointermove", pointermove_handler);
     }
-            //******************End Drag Stuff******************//
-        //******************End Zoom Stuff******************//
+    //******************End Drag Stuff******************//
+    //******************End Zoom Stuff******************//
     //******************End Image Preview Section******************//
     groupListeners([{ele:tabsArr, ev:"click", fun: closeOldGallery, action:"add"},{ele:galleryImages, ev:"click", fun:expandImage, action:"add"}]);
 }

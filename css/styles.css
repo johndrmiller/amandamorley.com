@@ -202,10 +202,18 @@ body {
 }    
     @keyframes appear{
         0% {opacity:0;}
-        100% {opacity:100;}
+        100% {opacity:1;}
     }
+    @keyframes disappear {
+        0% {opacity: 1;}
+        100% {opacity:0;}
+    }
+    
     .image-details-appear {
-        animation: .25s ease-in 0s appear;
+        animation: .25s ease-in 0s forwards appear;
+    }
+    .image-details-disappear {
+        animation: .25s ease-out 0s forwards disappear;
     }
     #image-details {
         position: absolute;
@@ -266,22 +274,29 @@ body {
             min-height:0px;
             height:100%;
             width:100%;
-            grid-template-columns: 2fr 1fr 1fr;
-            grid-template-rows: auto 10%;
-            /* grid-template-rows: 100%;  */
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto minmax(50px, 10%);
         }
-            #previewArea #previousImage {
+            #previewArea #previousButtonArea {
                 display:grid;
-                grid-column-start: 2;
+                grid-column-start: 1;
                 grid-row-start: 2;
             }
-                #previousImage #previousHitbox {
+                .hitbox {
+                    fill: #F6EEE4;
+                    fill-opacity: 0.8;
+                    min-width:50px;
+                    min-height:50px;
+                    width: 5vw;
+                    height: 5vw;
+                    max-height: 100%;
+                    max-width: 80px;
+                    cursor:pointer;
+                }
+                #previousButtonArea #previousButtonImage {
                     display: grid;
-                    width:50px;
-                    height:100%;
-                    border: 1px solid rgba(255,255,255,.75);
                     justify-self: end;
-                    margin-right: 5px;
+                    margin-right: 15px;
                 }
             
             #previewArea #image-display {
@@ -295,7 +310,7 @@ body {
                 width:100%;
                 overflow: hidden;
                 grid-column-start: 1;
-                grid-column: span 3;
+                grid-column: span 2;
                 grid-row-start:1;
             }
                 #image-container {
@@ -320,18 +335,16 @@ body {
                     .size-out {
                         animation: sizeout .5s linear;
                     }
-            #previewArea #nextImage {
+            #previewArea #nextButtonArea {
                 display: grid;
-                grid-column-start: 3;
+                grid-column-start: 2;
                 grid-row-start: 2;
             }
-                #nextImage #nextHitbox {
+                #nextButtonArea #nextButtonImage {
                     display:grid;
-                    width:50px;
-                    height:100%;
-                    border: 1px solid rgba(255,255,255,.75);
                     justify-self: start;
-                    margin-left: 5px;
+                    margin-left: 15px;
+                    transform: scaleX(-1);
                 }
         #image-details .image-instructions {
             justify-self: end;
@@ -482,6 +495,12 @@ body {
                 }
 /*End About Page*/
 
+@media (hover:none) and (pointer:coarse) {
+    #image-details #previewArea {
+        grid-template-columns: 3fr 1fr;        
+    }
+}
+
 @media only screen and (min-width: 600px) {
 /*Global Elements*/
         nav {
@@ -503,47 +522,6 @@ body {
                 padding-bottom:3px;
                 padding-top: 9px;
             }
-            #closebox {
-                right:5%;
-            }
-            #image-details #previewArea {
-                display: grid;
-                justify-self: stretch;
-                flex-grow: 2;
-                min-height:0px;
-                height:100%;
-                width:100%;
-                grid-template-columns: 60px auto 60px;
-                grid-template-rows: 1fr;
-                /* grid-template-rows: 100%;  */
-            }
-                #previewArea #previousImage {
-                    grid-column-start: 1;
-                    grid-row-start: 1;
-                }
-                    #previousImage #previousHitbox {
-                        margin-right: 0;
-                    }
-                #previewArea #image-display {
-                    justify-self: stretch;
-                    align-items: center;
-                    justify-content: center;
-                    min-height:0px;
-                    height:100%;
-                    width:100%;
-                    overflow: hidden;
-                    grid-column-start: 2;
-                    grid-column: span 1;
-                    grid-row-start:1;
-                }
-                #previewArea #nextImage {
-                    grid-column-start: 3;
-                    grid-row-start: 1;
-                }
-                    #nextImage #nextHitbox {
-                        justify-self: start;
-                        margin-left: 0px;
-                    }
 /*End Portfolio Page*/
 
 /*About Page Elements*/
@@ -667,7 +645,12 @@ body {
                 margin-top:-3.5vw;
             }
 /*End Global elements*/
-
+/*Home Page Elements*/
+    #circleMask {
+        border: 8px solid #8D6B54;
+        border-width: 16px 5px;
+    }
+/*End Home Page elements*/
 /*Portfolio Page Elements*/
         .galleryImages {
             width: 648px;
@@ -711,12 +694,6 @@ body {
                 }
 
 /*End About Page*/
-}
-@media only screen and (min-width: 768px) {
-    #circleMask {
-        border: 8px solid #8D6B54;
-        border-width: 16px 5px;
-    }
 }
 
 @media only screen and (min-width: 768px) and (max-aspect-ratio: 11/10){
@@ -794,7 +771,11 @@ body {
         }
 /*End Portfolio Page*/
 }
-
+@media only screen and (min-width: 900px) {
+        #closebox {
+            right:20%;
+        }
+}
 @media only screen and (min-width: 900px) and (min-aspect-ratio: 11/10) {
 /*Global elements*/
 body { 
@@ -841,12 +822,7 @@ body {
             }
 /*End Home page*/ 
 
-/*Portfolio Page Specific*/
-            #image-details #previewArea {
-                grid-template-columns: 90px auto 90px;
-                grid-template-rows: 1fr;
-                /* grid-template-rows: 100%;  */
-            }    
+/*Portfolio Page Specific*/   
     #PageLinks a.portfolioLink {
         background-color: inherit;
         color: #30170E;
