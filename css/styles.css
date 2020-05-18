@@ -59,6 +59,7 @@ body {
     backface-visibility: hidden;
     overflow-y: hidden;
     min-height:100vh;
+    min-height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     max-width:100%;
