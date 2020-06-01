@@ -85,7 +85,7 @@ body {
         justify-content: center;
         letter-spacing: .005em;
         flex-direction: column;
-        margin-top:8vw;
+        margin-top:5vh;
     }
         #HomeLink {
             text-align: center;
@@ -122,34 +122,37 @@ body {
         flex-grow: 2;
     }
     #home-mainContent {
-        margin-top:10.67vw;
+        margin-top:5vh;
     }
         .flourish {
             width: 33.33vw;
-            height: 89.6vw;
+            height: 57vh;
+            min-height: 69vw;
         }
         img#flourish-L {
             margin-right:-16vw;
-            margin-left:3vw;
+            margin-left:5vw;
         }
         #circleMask {
+            position:relative;
             width: 58.37vw;
-            height: 75.5vw;/*had to add the top margin value to account for missing height*/
+            height: 48vh;/*had to add the top margin value to account for missing height*/
+            min-height: 58.37vw;
             background-color: #8D6B54;
             border-radius:55%/55%;
             border: 3px solid #8D6B54;
             overflow: hidden;
             z-index: 2;
-            margin-top:9.4vw;
+            margin-top:6vh;
         }
             @keyframes zoomNfade {
                 0% {
                     transform: scale(1, 1);
                 }
-                50% {
+                70% {
                     opacity: 1;
                 }
-                60% {
+                75% {
                     transform: scale(.86, .86);
                 }
                 100% {
@@ -161,16 +164,21 @@ body {
                 animation: zoomNfade 4s ease-in-out;
             }
             #imageContainer {
-                position:relative;
-                width:87.76vw;
-                height:87.76vw;
-                top:-6.93vw;
-                left:-17.87vw;
+                position:absolute;
+                width:56vh;
+                height:56vh;
+                min-height: 68.1vw;
+                min-width: 68.1vw;
+                top: 50%;;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
             }
                 #imageContainer img {
                     position:absolute;
-                    width:87.76vw;
-                    height:87.76vw;
+                    width:56vh;
+                    height:56vh;
+                    min-width: 68.1vw;
+                    min-height: 68.1vw;
                     transform: scale(1,1);
                 }
                 #circleMask img:nth-child(1) {
@@ -518,6 +526,12 @@ body {
             }
 /*End Global Elements*/
 
+/*Home Elements*/
+        #home-mainContent {
+            margin-top:7vh;
+        }
+/*End Home Elements*/
+
 /*Portfolio Page Specific*/
             #PageLinks a.portfolioLink {
                 padding-bottom:3px;
@@ -580,34 +594,46 @@ body {
 
 /*Home page specific*/            
         #home-mainContent {
-            margin-top:0;
+            margin-top:5vh;
         }
             .flourish {
-                width: 15.68vw;
-                height: 42.08vw;
+                width: 36vh;
+                height: 75vh;
                 margin-top: 0px;
+                min-height: 25vh;
+                max-height: 61vw;
+                max-width: 25vw;
             }
             img#flourish-L {
-                margin-right:-7.3vw;
+                margin-right:-9vw;
             }
             #circleMask {
-                width: 32.6vw;
-                height: 32.6vw;
-                border-radius:16.4vw;
+                width: 55vh;
+                max-width: 50vw;
+                height: 61vh;
+                min-height: unset;
+                max-height: 55vw;
+                /* border-radius:16.4vw; */
                 margin-top:2.96vw;
             }
                 #imageContainer {
-                    width:37.93vw;
-                    height:37.93vw;
-                    top:-3.11vw;
-                    left:-3.11vw;
+                    width:75vh;
+                    height:75vh;
+                    min-width:unset;
+                    min-height:unset;
+                    max-height: 68vw;
+                    max-width:68vw;
                 }
                     #imageContainer img {
-                        width:37.93vw;
-                        height:37.93vw;
+                        width:75vh;
+                        height:75vh;
+                        min-width: unset;
+                        min-height:unset;
+                        max-height:68vw;
+                        max-width: 68vw;
                     }
             img#flourish-R {
-                margin-left:-7.3vw;
+                margin-left:-9vw;
             }
             footer div {
                 margin-top:-2.96vw;
@@ -649,7 +675,7 @@ body {
 /*Home Page Elements*/
     #circleMask {
         border: 8px solid #8D6B54;
-        border-width: 16px 5px;
+        border-width: 2.2vh 0.7vh;
     }
 /*End Home Page elements*/
 /*Portfolio Page Elements*/
@@ -707,39 +733,6 @@ body {
     }          
 /*End Global Elements*/
 
-/*Home page specific*/            
-        #home-mainContent {
-            margin-top:10.42vw;
-        }
-            .flourish {
-                width: 27.64vw;
-                height: 74.35vw;
-                margin-top: 0px;
-            }
-            img#flourish-L {
-                margin-right:-12.11vw;
-            }
-            #circleMask {
-                width: 46.875vw;
-                height: 62.8125vw;
-                border-radius:55%/55%;
-                margin-top:8.1vw;
-            }
-                #imageContainer {
-                    width:73.43vw;
-                    height:73.43vw;
-                    top:-5.31vw;
-                    left:-13.277vw;
-                }
-                    #imageContainer img {
-                        width:73.43vw;
-                        height:73.43vw;
-                    }
-            img#flourish-R {
-                margin-left:-12.11vw;
-            }
-/*End Home page*/ 
-
 /*Portfolio Page Specific*/
     #PageLinks a.portfolioLink {
         background-color: inherit;
@@ -794,35 +787,7 @@ body {
         #home-mainContent {
             margin-top:3.51vh;
         }
-            .flourish {
-                width: 20.70vw;
-                height: 55.66vw;
-                margin-top: 0px;
-            }
-            img#flourish-L {
-                margin-right:-9.08vw;
-            }
-            #circleMask {
-                width: 33.89vw;
-                height: 45.41vw;
-                border-radius:55%/55%;
-                margin-top:6.05vw;
-            }
-                #imageContainer {
-                    width:52.80vw;
-                    height:52.80vw;
-                    top:-3.7vw;
-                    left:-9.41vw;
-                }
-                    #imageContainer img {
-                        width:52.80vw;
-                        height:52.80vw;
-                    }
-            img#flourish-R {
-                margin-left:-9.08vw;
-            }
-/*End Home page*/ 
-
+            
 /*Portfolio Page Specific*/   
     #PageLinks a.portfolioLink {
         background-color: inherit;
@@ -875,39 +840,6 @@ body {
         }
 /*End Global Elements*/
 
-/*Home page specific*/ 
-        #home-mainContent {
-            margin-top:.04vh;
-        }
-        .flourish {
-                width: 15.52vw;
-                height: 41.73vw;
-                margin-top: 0px;
-            }
-            img#flourish-L {
-                margin-right:-6.81vw;
-            }
-            #circleMask {
-                width: 25.40vw;
-                height: 34.04vw;
-                border-radius:55%/55%;
-                margin-top:3.88vw;
-            }
-                #imageContainer {
-                    width:39.58vw;
-                    height:39.58vw;
-                    top:-2.7vw;
-                    left:-7.09vw;
-                }
-                    #imageContainer img {
-                        width:39.58vw;
-                        height:39.58vw;
-                    }
-            img#flourish-R {
-                margin-left:-6.81vw;
-            }
-/*End Home page*/
-
 /*Portfolio Page Specific*/           
         #portfolioSubnav {
             background-color: inherit; 
@@ -935,7 +867,6 @@ body {
                 font-size: 1.25em;
                 line-height: 1.5em; 
                 grid-template-columns: 40% 60%;
-
             }
 /*End About Page*/
 }
@@ -965,35 +896,11 @@ body {
 /*End Global Elements*/
 
 /*Home page specific*/ 
-        #home-mainContent {
-            margin-top:0;
-        }
-            .flourish {
-                width: 15.92vw;
-                height: 42.8125vw;
-                margin-top: 0px;
-            }
             img#flourish-L {
-                margin-right:-4.77vw;
+                margin-right:-7vw;
             }
-            #circleMask {
-                width: 26.0625vw;
-                height: 34.92vw;
-                border-radius:55%/55%;
-                margin-top:3.92vw;
-            }
-                #imageContainer {
-                    width:40.7vw;
-                    height:40.7vw;
-                    top:-2.89vw;
-                    left:-7.31875vw;
-                }
-                    #imageContainer img {
-                        width:40.7vw;
-                        height:40.7vw;
-                    }
             img#flourish-R {
-                margin-left:-4.77vw;
+                margin-left:-7vw;
             }
 /*End Home page*/  
 
@@ -1027,4 +934,13 @@ body {
 
             }
 /*End About Page*/         
+}
+
+@media only screen and (min-aspect-ratio: 23/10) {
+    img#flourish-R {
+        margin-left: -3vw;
+    }
+    img#flourish-L {
+        margin-right: -3vw;
+    }
 }
