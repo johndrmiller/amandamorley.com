@@ -71,6 +71,7 @@ body {
     font-weight: 400;
     color:#6B331D;    
 }
+
     html body a:-webkit-any-link, html body a:visited, html body a:active {
         text-decoration: none;
         color:#6B331D;
@@ -503,6 +504,11 @@ body {
                     margin-bottom:12px;
                 }
 /*End About Page*/
+@media only screen and (hover: none) {
+    body {
+        height: calc(var(--vh, 1vh)*100);
+    }
+}
 
 @media (hover:none) and (pointer:coarse) {
     #image-details #previewArea {
@@ -931,7 +937,6 @@ body {
                 column-gap: 30px;
                 grid-template-rows: 50px auto;
                 grid-template-columns: 40% 60%;
-
             }
 /*End About Page*/         
 }
