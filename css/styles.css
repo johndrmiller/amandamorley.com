@@ -507,6 +507,13 @@ body {
 @media only screen and (hover: none) {
     body {
         min-height: calc(var(--vh, 1vh)*100);
+        max-height: calc(var(--vh, 1vh)*100);
+    }
+    .portfolioPage {
+        max-height: calc(var(--vh, 1vh)*100);
+    }
+    #image-details {
+        height: calc(var(--vh, 1vh)*100);
     }
 }
 
