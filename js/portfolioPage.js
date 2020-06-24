@@ -9,11 +9,11 @@
     *       Zooming in and out of images - around line 240
     *       Dragging the image - around line 380
 */
+
 window.onload = function() {
     //*gallery page elements
     const tabsArr = [...document.getElementById("portfolioSubnav").getElementsByTagName("a")];
     const galleriesArr = [...document.getElementsByClassName("gallery")];
-    const imageCollections= {};
     //*image preview elements
     const imageView = document.getElementById("image-details");
     const ivHeader = imageView.getElementsByTagName("header")[0];
@@ -30,9 +30,9 @@ window.onload = function() {
     var currentGallery = galleriesArr.filter(gallery => gallery.classList.contains("showingGallery"))[0];
     var galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
     var lastGalleryIndex = galleryImages.length - 1;
-    var imageProportion, currentImage, currentImageIndex, startingEvCoords = {};
+    var imageProportion, currentImageIndex, startingEvCoords = {};
 
-    //*takes array of objects[{ele:element, ev:event, fun:function, action:("add" or "remove"), opts:(optional, {} or options object)}]
+    //*takes array of objects[{ele:element or array of elements, ev:event or array of events, fun:function, action:"add" or "remove", opts:optional, {} or options object}]
     //*if element or event is an array, function runs through elements first, then events.
     const groupListeners = (arr) => {
         for (let i in arr) { 
@@ -87,9 +87,6 @@ window.onload = function() {
     //******************End Tab Switching Section******************//
 
     //******************Begin Image Preview Section******************//
-    function imageSetup(e) {
-        
-    }
     function expandImage(e) {
         let infoNode = e.target.parentNode.parentNode;
         currentImageIndex = galleryImages.indexOf(infoNode);
@@ -131,8 +128,6 @@ window.onload = function() {
         imageEnlargement.classList.add("image-details-disappear");
 
         function openNewImage(e) {
-            console.log("test");
-            console.log(e);
             imageEnlargement.style.opacity="0";
             imageEnlargement.classList.remove("image-details-disappear");
 
@@ -141,12 +136,16 @@ window.onload = function() {
                 imageEnlargement.addEventListener("animationend", wrapUp);
                 imageEnlargement.classList.add("image-details-appear"); 
             }, {once:true});
+            if (imageContainer.style.top || imageContainer.style.left) {
+                imageContainer.style.top = 0;
+                imageContainer.style.left = 0;
+            }
+            imageContainer.style.width = "auto";
+            imageContainer.style.height = "auto";
             imageEnlargement.src = galleryImages[currentImageIndex].dataset.imageFile;
             imageTitle.textContent = galleryImages[currentImageIndex].dataset.imageName;
         }
         function wrapUp(e) {
-            console.log("wrap-up")
-            console.log(e);      ;
             imageEnlargement.style.opacity= "";
             imageEnlargement.classList.remove("image-details-appear");
             for (button of imageNavButtons) {
@@ -157,8 +156,6 @@ window.onload = function() {
     //******************End change Image Stuff******************//
     function imageCalcs(e) {
         //*setting up sizes and position of image preview modal and content
-        console.log("thing");
-        console.log(e);
         let natH = imageEnlargement.naturalHeight;
         let natW = imageEnlargement.naturalWidth;
         let imageAreaBox = window.getComputedStyle(imageArea);
@@ -173,13 +170,14 @@ window.onload = function() {
         
         //*checking if image is horizontal or vertical, then calculating display w and h of image based on 90% of available width or height
         if (imageProportion <= 1) {
+            
             imageHeight = imageAreaHeight*0.9;
             imageWidth = imageProportion*imageHeight;
         } else if (imageProportion > 1) {
             imageWidth = imageAreaWidth*0.9;
             imageHeight = imageWidth/imageProportion;
         }
-
+        
         //*setting height or width of image, checks to make sure full image will fit within previw area
         if ((imageProportion <= 1 && imageAreaWidth > imageWidth) || (imageProportion > 1 && imageAreaHeight < imageHeight)) {
             imageContainer.style.height = "90%";
@@ -193,7 +191,6 @@ window.onload = function() {
         
         imContStyle = window.getComputedStyle(imageContainer);
         currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
-
         imageContAdjustment(imageProportion, currentRatio, imContStyle.width, imContStyle.height);   
         /* imageView.addEventListener("animationend",finalize);
         imageView.classList.add("image-details-appear"); */
@@ -434,7 +431,7 @@ window.onload = function() {
             } else {
                 imageContainer.style.top = (parseInt(imageContainer.style.top) - yMovement) +"px";
             }
-        } else if ( ydir == "down" && imageBox.top < imageAreaBox.top) {
+        } else if (ydir == "down" && imageBox.top < imageAreaBox.top) {
             if (imageBox.top+yMovement > imageAreaBox.top) {
                 imageContainer.style.top = (imageBox.height - imageAreaBox.height)/2 + "px";
             } else {

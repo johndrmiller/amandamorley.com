@@ -463,17 +463,26 @@ body {
 /*End Portfolio Page*/
 
 /*About Page Specific*/
+    .aboutPage {
+        max-height: 100vh;
+    }
             #PageLinks .aboutLink {
                 text-decoration: underline;
             }
+            #about-mainContent {
+                overflow-y: hidden;
+            }
             #about-content-container {
                 width: 100vw;
-                height: 100%;
+                display:flex;
+                flex-direction: column;
+                overflow-y: auto;
                 padding: 10px 5px 0;
                 padding-left: 8vw;
                 padding-right:8vw;
 
             }
+                
                 #email-link {
                     width: 100%;
                     text-align: center;
@@ -481,9 +490,12 @@ body {
                     #email-link a {
                         text-decoration: underline;
                     }
+                #bio {
+                    display: flex;
+                    flex-direction: column;
+                    overflow-y: auto;
+                }
                 #profile-picture {
-                    /* width:107px; */
-                    /* height:160px; */
                     margin: 14px 10px 0 0;
                     float: left;
                 }
@@ -492,23 +504,22 @@ body {
                         height:auto;
                         display:block;
                     }
-                #bio {
+                #bioText {
                     clear: right;
                     margin-top:10px;
                     letter-spacing: .035em;
                     line-height: 1.375em;
                     
                 }
-                #bio p {
+                #bioText p {
                     margin-top: 0px;
                     margin-bottom:12px;
                 }
+        .aboutPage footer {
+            margin-top: 10px;
+        }
 /*End About Page*/
 @media only screen and (hover: none) {
-    body {
-        min-height: calc(var(--vh, 1vh)*100);
-        max-height: calc(var(--vh, 1vh)*100);
-    }
     .portfolioPage {
         max-height: calc(var(--vh, 1vh)*100);
     }
@@ -553,38 +564,15 @@ body {
 /*End Portfolio Page*/
 
 /*About Page Elements*/
-            #about-content-container {
-                display: grid;
-                padding: 5px 5px;
-                padding-left: 10vw;
-                padding-right: 10vw;
-                grid-template-columns: 40% 60%;
-                grid-template-rows: 20px auto;
-                column-gap: 10px; 
-            }
                 #profile-picture {
-                    grid-column-start: 1;
-                    grid-column-end: 2;
-                    grid-row-start: 1;
-                    grid-row-end: span 2;
-                    margin-top:6px;
-                    margin-right: 0;
+                    width: 33%;
+                    margin-right: 3%;
                 }
                     #profile-picture img {
                         width: 100%;
                         height:auto;
+                        
                     }
-                #email-link {
-                    grid-column-start: 2;
-                    grid-row-start: 1;
-                    grid-row-end:2;
-                    text-align: left;
-                }
-                #bio {
-                    grid-column-start:2;
-                    grid-row-start:2;
-                    padding-right:5px;
-                }
 /*End About Page*/
 }
 
@@ -706,33 +694,9 @@ body {
             #about-content-container {
                 padding-left: 10vw;
                 padding-right: 10vw;
-                grid-template-columns: 45% 55%;
-                grid-template-rows: 40px auto;
-                column-gap: 15px; 
                 margin-top: 20px;
                 font-size: 1.125em;
             }
-                #profile-picture {
-                    grid-row-start: 2;
-                    margin-right: 0;
-                }
-                    #profile-picture img {
-                        width: 100%;
-                        height:auto;
-                    }
-                #email-link {
-                    grid-column-start: 1;
-                    grid-column-end: span 2;
-                    grid-row-start: 1;
-                    grid-row-end:2;
-                    text-align: center;
-                }
-                #bio {
-                    grid-column-start:2;
-                    grid-row-start:2;
-                    padding-right:5px;
-                }
-
 /*End About Page*/
 }
 
@@ -879,7 +843,6 @@ body {
                 padding-right: 15vw;
                 font-size: 1.25em;
                 line-height: 1.5em; 
-                grid-template-columns: 40% 60%;
             }
 /*End About Page*/
 }
@@ -941,9 +904,6 @@ body {
                 padding-right: 20vw;
                 font-size: 1.25em;
                 line-height: 1.5em; 
-                column-gap: 30px;
-                grid-template-rows: 50px auto;
-                grid-template-columns: 40% 60%;
             }
 /*End About Page*/         
 }
