@@ -465,12 +465,10 @@ body {
 /*About Page Specific*/
     .aboutPage {
         max-height: 100vh;
+        overflow-y: auto;
     }
             #PageLinks .aboutLink {
                 text-decoration: underline;
-            }
-            #about-mainContent {
-                overflow-y: hidden;
             }
             #about-content-container {
                 width: 100vw;
