@@ -470,6 +470,9 @@ body {
             #PageLinks .aboutLink {
                 text-decoration: underline;
             }
+            #about-mainContent {
+                overflow-y: hidden;
+            }
             #about-content-container {
                 width: 100vw;
                 display:flex;
