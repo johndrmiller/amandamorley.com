@@ -201,7 +201,13 @@ window.onload = function() {
         let modifier = 1/window.visualViewport.scale;
         let ivStyles = window.getComputedStyle(imageView);
         let ivHeaderStyles = window.getComputedStyle(ivHeader);
-        imageView.style = `width: ${modifier*100}vw; height:${modifier*100}vh; top:${window.visualViewport.offsetTop}px; left:${window.visualViewport.offsetLeft}px; font-size:${parseInt(ivStyles.getPropertyValue("font-size"))*modifier}px;`;
+        console.log(imageView.style);
+        imageView.style.width = `${modifier*100}vw`;
+        imageView.style.height = `${modifier*100}vh`;
+        imageView.style.top = `${window.visualViewport.offsetTop}px`;
+        imageView.style.left = `${window.visualViewport.offsetLeft}px`;
+        imageView.style.fontSize = `${parseInt(ivStyles.getPropertyValue("font-size"))*modifier}px;`;
+        // imageView.style += `width: ${modifier*100}vw; height:${modifier*100}vh; top:${window.visualViewport.offsetTop}px; left:${window.visualViewport.offsetLeft}px; font-size:${parseInt(ivStyles.getPropertyValue("font-size"))*modifier}px;`;
         ivHeader.style = `padding-top: ${parseInt(ivHeaderStyles.getPropertyValue("padding-top"))*modifier}px; padding-bottom: ${parseInt(ivHeaderStyles.getPropertyValue("padding-bottom"))*modifier}px;`;
     }
 
