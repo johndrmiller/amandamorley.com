@@ -9,8 +9,6 @@
     *       Zooming in and out of images - around line 240
     *       Dragging the image - around line 380
 */
-
-
 //*gallery page elements
 const portfolioNavArray = [...document.getElementById("portfolioSubnav").getElementsByTagName("a")];
 const galleriesArray = [...document.getElementsByClassName("gallery")];
@@ -52,35 +50,56 @@ const groupListeners = (arr) => {
 }
 
 //******************Begin Tab Switching Section******************//
-function closeOldGallery(e) {
+async function changeGallery(e) {
+    const newGallery = await pickNewGallery(e);
+    if (newGallery.clickedTab == currentTab) return
+    groupListeners([{ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"remove"},{ele:galleryImages,ev:"click", fun:expandImage, action:"remove"}]);
+    closeOldGallery().then(() => {
+        openNewGallery(newGallery.nextGallery);
+    }).then(() => {
+        cleanupAndReset(newGallery);
+    });
+}
+
+function pickNewGallery(e) {
     let clickedTab = e.target;
     let nextGallery = galleriesArray.filter(gallery => {return gallery.id == clickedTab.dataset.gallery})[0];
-    if (clickedTab == currentTab) return
-
-    groupListeners([{ele:portfolioNavArray, ev:"click", fun: closeOldGallery, action:"remove"},{ele:galleryImages,ev:"click", fun:expandImage, action:"remove"}]);
     nextGallery.style.opacity = 0;
+    return {"clickedTab": clickedTab, "nextGallery": nextGallery}
+}
+
+async function closeOldGallery() {
     currentGallery.classList.add("gallery-fade-out");  
-    currentGallery.addEventListener('animationend', function (e){
-        openNewGallery(nextGallery);
-    }, {once: true});
-    currentTab.classList.remove("selectedGallery");
-    clickedTab.classList.add("selectedGallery");
-    currentTab = clickedTab;  
+    return new Promise((resolve, reject) => {
+        currentGallery.addEventListener('animationend', function (e) {
+            resolve();
+        }, {once:true});
+    });
 }
 
-function openNewGallery (nextGallery) {
+async function openNewGallery (nextGallery) {
     nextGallery.classList.add("showingGallery", "gallery-fade-in");
-    currentGallery.classList.remove("showingGallery", "gallery-fade-out");
-    nextGallery.addEventListener("animationend", resolveAndResetGallery, {once:true});
+    return new Promise((resolve, reject) => {
+        nextGallery.addEventListener("animationend", function (e) {
+            resolve();
+        }, {once:true});
+    });
 }
 
-function resolveAndResetGallery(e) {
-    currentGallery = e.target;
+function cleanupAndReset(newGallery) {
+    currentTab.classList.remove("selectedGallery");
+    newGallery.clickedTab.classList.add("selectedGallery");
+    
+    currentGallery.classList.remove("showingGallery", "gallery-fade-out");
+    newGallery.nextGallery.classList.remove("gallery-fade-in");
+
+    currentTab = newGallery.clickedTab;
+    currentGallery = newGallery.nextGallery;
     galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
     lastGalleryIndex = galleryImages.length - 1;
     currentGallery.style = "";
-    currentGallery.classList.remove("gallery-fade-in");
-    groupListeners([{ele:portfolioNavArray, ev:"click", fun:closeOldGallery, action:"add"},{ele:galleryImages,ev:"click", fun:expandImage, action:"add"}]);
+
+    groupListeners([{ele:portfolioNavArray, ev:"click", fun:changeGallery, action:"add"},{ele:galleryImages,ev:"click", fun:expandImage, action:"add"}]);
 }
 //******************End Tab Switching Section******************//
 
@@ -448,4 +467,4 @@ function moveImage(startingCoords,currentCoords) {
 //******************End Drag Stuff******************//
 //******************End Zoom Stuff******************//
 //******************End Image Preview Section******************//
-groupListeners([{ele:portfolioNavArray, ev:"click", fun: closeOldGallery, action:"add"},{ele:galleryImages, ev:"click", fun:expandImage, action:"add"}]);
+groupListeners([{ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"add"},{ele:galleryImages, ev:"click", fun:expandImage, action:"add"}]);
