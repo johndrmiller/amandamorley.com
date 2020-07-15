@@ -3,7 +3,7 @@
     *   Variable declaration - Beginning
     *   Group listeners function - around line 35
     *   The section that controls the switching of the different gallery types (or "tabs") - around line 55
-    *   The image preview section - around line 90
+    *   The image preview section - around line 105
     *       The image preview section has several distinct parts as well:
     *       Changing images in preview - around line 110
     *       Zooming in and out of images - around line 240
@@ -44,7 +44,7 @@ const groupListeners = (arr) => {
                 groupListeners([{ele:arr[i].ele, ev:e, fun:arr[i].fun, action:arr[i].action, opts:ops}]);
             })
         } else { 
-            arr[i].ele[arr[i].action+"EventListener"](arr[i].ev, arr[i].fun, ops);
+            arr[i].ele[`${arr[i].action}EventListener`](arr[i].ev, arr[i].fun, ops);
         }
     }
 }
@@ -53,7 +53,11 @@ const groupListeners = (arr) => {
 async function changeGallery(e) {
     const newGallery = await pickNewGallery(e);
     if (newGallery.clickedTab == currentTab) return
-    groupListeners([{ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"remove"},{ele:galleryImages,ev:"click", fun:expandImage, action:"remove"}]);
+    newGallery.nextGallery.style.opacity = 0;
+    groupListeners([
+        {ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"remove"},
+        {ele:galleryImages,ev:"click", fun:openImagePreview, action:"remove"}
+    ]);
     closeOldGallery().then(() => {
         openNewGallery(newGallery.nextGallery);
     }).then(() => {
@@ -64,7 +68,6 @@ async function changeGallery(e) {
 function pickNewGallery(e) {
     let clickedTab = e.target;
     let nextGallery = galleriesArray.filter(gallery => {return gallery.id == clickedTab.dataset.gallery})[0];
-    nextGallery.style.opacity = 0;
     return {"clickedTab": clickedTab, "nextGallery": nextGallery}
 }
 
@@ -99,32 +102,128 @@ function cleanupAndReset(newGallery) {
     lastGalleryIndex = galleryImages.length - 1;
     currentGallery.style = "";
 
-    groupListeners([{ele:portfolioNavArray, ev:"click", fun:changeGallery, action:"add"},{ele:galleryImages,ev:"click", fun:expandImage, action:"add"}]);
+    groupListeners([
+        {ele:portfolioNavArray, ev:"click", fun:changeGallery, action:"add"},
+        {ele:galleryImages, ev:"click", fun:openImagePreview, action:"add"}
+    ]);
 }
 //******************End Tab Switching Section******************//
-
 //******************Begin Image Preview Section******************//
-function expandImage(e) {
-    console.log(e.target);
+function openImagePreview(e) {
     let infoNode = e.target.closest(".galleryImage");
     currentImageIndex = galleryImages.indexOf(infoNode);
+
     imagePreview.style.opacity = 0;
     imagePreview.style.display = "flex";
-    closeBox.addEventListener("click", closePreview);
+    
     imageEnlargement.addEventListener("load", function(e) {
-        imageCalcs(e);
-        imagePreview.addEventListener("animationend",finalize);
-        imagePreview.classList.add("image-details-appear");
+        imageCalcs(e).then(() => {
+            imagePreview.addEventListener("animationend",finalizeImagePreview, {once:true});
+            imagePreview.classList.add("image-details-appear");
+            closeBox.addEventListener("click", closePreview);
+        });
     }, {once:true});
+
     imageEnlargement.src = infoNode.dataset.imageFile;
     imageTitle.textContent = infoNode.dataset.imageName; 
 }
-//******************Change Image Stuff******************//
-function changeImage(e){
-    for (button of imagePreviewNavButtons) {
-        button.removeEventListener("click", changeImage);
+
+async function imageCalcs(e) {
+    //*setting up sizes and position of image preview modal and content
+    let imageAreaBox = window.getComputedStyle(imageArea);
+    let imageAreaHeight = parseInt(imageAreaBox.height);
+    let imageAreaWidth = parseInt(imageAreaBox.width);
+    let imContStyle, currentRatio, imageHeight, imageWidth;
+
+    imageProportion = imageEnlargement.naturalWidth/imageEnlargement.naturalHeight;
+
+    //*disabling native browser resizing for custom implementation
+    groupListeners([
+        {ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"add", opts:{passive:false}}
+    ]);
+    
+    //*checking if image is horizontal or vertical, then calculating display w and h of image based on 90% of available width or height
+    if (imageProportion <= 1) {
+        imageHeight = imageAreaHeight*0.9;
+        imageWidth = imageProportion*imageHeight;
+    } else if (imageProportion > 1) {
+        imageWidth = imageAreaWidth*0.9;
+        imageHeight = imageWidth/imageProportion;
     }
     
+    //*setting height or width of image, checks to make sure full image will fit within previw area
+    if ((imageProportion <= 1 && imageAreaWidth > imageWidth) || (imageProportion > 1 && imageAreaHeight < imageHeight)) {
+        imageContainer.style.height = "90%";
+    } else if ((imageProportion > 1 && imageAreaHeight > imageHeight) || (imageProportion <= 1 && imageAreaWidth < imageWidth)) {
+        imageContainer.style.width = "90%";
+    }
+
+    if (window.visualViewport.scale > 1.0) scaleCorrection();
+    
+    imContStyle = window.getComputedStyle(imageContainer);
+    currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
+    imageContAdjustment(imageProportion, currentRatio, imContStyle.width, imContStyle.height);
+
+    return new Promise((resolve, reset) => {
+        resolve();
+    });
+}
+
+//*adjusting size of modal elements based on viewport scale to make sure everything is visible on screen
+function scaleCorrection() {
+    let scaleModifier = 1/window.visualViewport.scale;
+    let imagePreviewStyles = window.getComputedStyle(imagePreview);
+    let previewHeaderStyles = window.getComputedStyle(previewHeader);
+
+    imagePreview.style.width = `${scaleModifier*100}vw`;
+    imagePreview.style.height = `${scaleModifier*100}vh`;
+    imagePreview.style.top = `${window.visualViewport.offsetTop}px`;
+    imagePreview.style.left = `${window.visualViewport.offsetLeft}px`;
+    imagePreview.style.fontSize = `${parseInt(imagePreviewStyles.getPropertyValue("font-size"))*scaleModifier}px;`;
+    previewHeader.style = `padding-top: ${parseInt(previewHeaderStyles.getPropertyValue("padding-top"))*scaleModifier}px; padding-bottom: ${parseInt(previewHeaderStyles.getPropertyValue("padding-bottom"))*scaleModifier}px;`;
+}
+
+//*if img and its container aren't the same ratio, the container is updated to match the image 
+function imageContAdjustment(image, current, width, height) {
+    current < image ? imageContainer.style.height = parseInt(width)*(1/image)+"px" : imageContainer.style.width = image*parseInt(height)+"px";
+}
+
+function stopZoomScroll(e) {
+    e.preventDefault();
+}
+
+function finalizeImagePreview(e) {
+    imagePreview.style.opacity = 1;
+    imagePreview.classList.remove("image-details-appear");
+
+    groupListeners([
+        {ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"add"},
+        {ele:imageArea, ev:"pointerdown", fun: pointerdown_handler, action:"add"},
+        {ele:imageArea, ev: "pointermove", fun: pointermove_handler, action:"add"},
+        {ele:imageArea, ev:"wheel", fun: wheel_handler, action:"add"},
+        {ele:imagePreviewNavButtons, ev:"click", fun:changeImage, action:"add"}
+    ]);
+}
+
+function closePreview(e) {
+    imagePreview.style = previewHeader.style = imageContainer.style = "";
+
+    groupListeners([
+        {ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"remove"},
+        {ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"remove", opts:{passive:false}},
+        {ele:imageArea, ev:"pointerdown", fun: pointerdown_handler, action:"remove"},
+        {ele:imageArea, ev:"pointermove", fun: pointermove_handler, action:"remove"},
+        {ele:imageArea, ev:"wheel", fun: wheel_handler, action:"remove"},
+        {ele:imagePreviewNavButtons, ev:"click", fun:changeImage, action:"remove"}
+    ]);
+}
+
+//******************Change Image Stuff******************//
+function changeImage(e){
+    groupListeners([
+        {ele:imagePreviewNavButtons, ev:"click", fun:changeImage, action:"remove"}
+    ]);
+
     switch (e.currentTarget) {
         case previousButton:
             if (currentImageIndex == 0) {
@@ -144,129 +243,54 @@ function changeImage(e){
 
     imageEnlargement.addEventListener("animationend", openNewImage, {once:true});
     imageEnlargement.classList.add("image-details-disappear");
+}
 
-    function openNewImage(e) {
-        imageEnlargement.style.opacity="0";
-        imageEnlargement.classList.remove("image-details-disappear");
+function openNewImage() {
+    imageEnlargement.style.opacity="0";
+    imageEnlargement.classList.remove("image-details-disappear");
 
-        imageEnlargement.addEventListener("load", function(e) {
-            imageCalcs(e);
-            imageEnlargement.addEventListener("animationend", wrapUp);
+    imageEnlargement.addEventListener("load", function(e) {
+        imageCalcs(e).then(() => {
+            imageEnlargement.addEventListener("animationend", imageChangeWrapUp), {once:true};
             imageEnlargement.classList.add("image-details-appear"); 
-        }, {once:true});
-        if (imageContainer.style.top || imageContainer.style.left) {
-            imageContainer.style.top = 0;
-            imageContainer.style.left = 0;
-        }
-        imageContainer.style.width = "auto";
-        imageContainer.style.height = "auto";
-        imageEnlargement.src = galleryImages[currentImageIndex].dataset.imageFile;
-        imageTitle.textContent = galleryImages[currentImageIndex].dataset.imageName;
+        });
+    }, {once:true});
+    if (imageContainer.style.top || imageContainer.style.left) {
+        imageContainer.style.top = 0;
+        imageContainer.style.left = 0;
     }
-    function wrapUp(e) {
-        imageEnlargement.style.opacity= "";
-        imageEnlargement.classList.remove("image-details-appear");
-        for (button of imagePreviewNavButtons) {
-            button.addEventListener("click", changeImage);
-        }
-    }
+    imageContainer.style.width = "auto";
+    imageContainer.style.height = "auto";
+    imageEnlargement.src = galleryImages[currentImageIndex].dataset.imageFile;
+    imageTitle.textContent = galleryImages[currentImageIndex].dataset.imageName;
+}
+
+function imageChangeWrapUp() {
+    imageEnlargement.style.opacity= "";
+    imageEnlargement.classList.remove("image-details-appear");
+    groupListeners([
+        {ele:imagePreviewNavButtons, ev:"click", fun:changeImage, action:"add"}
+    ]);
 }
 //******************End change Image Stuff******************//
-function imageCalcs(e) {
-    //*setting up sizes and position of image preview modal and content
-    let natH = imageEnlargement.naturalHeight;
-    let natW = imageEnlargement.naturalWidth;
-    let imageAreaBox = window.getComputedStyle(imageArea);
-    let imageAreaHeight = parseInt(imageAreaBox.height);
-    let imageAreaWidth = parseInt(imageAreaBox.width);
-    let imContStyle, currentRatio, imageHeight, imageWidth;
-
-    imageProportion = natW/natH;
-
-    //*disabling native browser resizing for custom implementation
-    groupListeners([{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"add", opts:{passive:false}}]);
-    
-    //*checking if image is horizontal or vertical, then calculating display w and h of image based on 90% of available width or height
-    if (imageProportion <= 1) {
-        imageHeight = imageAreaHeight*0.9;
-        imageWidth = imageProportion*imageHeight;
-    } else if (imageProportion > 1) {
-        imageWidth = imageAreaWidth*0.9;
-        imageHeight = imageWidth/imageProportion;
-    }
-    
-    //*setting height or width of image, checks to make sure full image will fit within previw area
-    if ((imageProportion <= 1 && imageAreaWidth > imageWidth) || (imageProportion > 1 && imageAreaHeight < imageHeight)) {
-        imageContainer.style.height = "90%";
-    } else if ((imageProportion > 1 && imageAreaHeight > imageHeight) || (imageProportion <= 1 && imageAreaWidth < imageWidth)) {
-        imageContainer.style.width = "90%";
-    }
-
-    if (window.visualViewport.scale > 1.0) {
-        scaleCorrection();
-    }
-    
-    imContStyle = window.getComputedStyle(imageContainer);
-    currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
-    imageContAdjustment(imageProportion, currentRatio, imContStyle.width, imContStyle.height);   
-    /* imagePreview.addEventListener("animationend",finalize);
-    imagePreview.classList.add("image-details-appear"); */
-}
-
-//*adjusting size of modal elements based on viewport scale to make sure everything is visible on screen
-function scaleCorrection() {
-    let modifier = 1/window.visualViewport.scale;
-    let ivStyles = window.getComputedStyle(imagePreview);
-    let previewHeaderStyles = window.getComputedStyle(previewHeader);
-    imagePreview.style.width = `${modifier*100}vw`;
-    imagePreview.style.height = `${modifier*100}vh`;
-    imagePreview.style.top = `${window.visualViewport.offsetTop}px`;
-    imagePreview.style.left = `${window.visualViewport.offsetLeft}px`;
-    imagePreview.style.fontSize = `${parseInt(ivStyles.getPropertyValue("font-size"))*modifier}px;`;
-    previewHeader.style = `padding-top: ${parseInt(previewHeaderStyles.getPropertyValue("padding-top"))*modifier}px; padding-bottom: ${parseInt(previewHeaderStyles.getPropertyValue("padding-bottom"))*modifier}px;`;
-}
-
-//*if img and its container aren't the same ratio, the container is updated to match the image 
-function imageContAdjustment(image, current, width, height) {
-    current < image ? imageContainer.style.height = parseInt(width)*(1/image)+"px" : imageContainer.style.width = image*parseInt(height)+"px";
-}
-
-function stopZoomScroll(e) {
-    e.preventDefault();
-}
-
-function finalize(e) {
-    imagePreview.style.opacity = 1;
-    imagePreview.removeEventListener("animationend",finalize);
-    imagePreview.classList.remove("image-details-appear");
-    imageArea.addEventListener("pointerdown", pointerdown_handler);
-    imageArea.addEventListener("pointermove", pointermove_handler);
-    imageArea.addEventListener("wheel", wheel_handler);
-    groupListeners([{ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"add"}]);
-    for (button of imagePreviewNavButtons) {
-        button.addEventListener("click", changeImage);
-    }
-}
-
-function closePreview(e) {
-    imagePreview.style = previewHeader.style = imageContainer.style = "";
-    imageArea.removeEventListener("pointerdown", pointerdown_handler);
-    imageArea.removeEventListener("pointermove", pointermove_handler);
-    imageArea.removeEventListener("wheel", wheel_handler);
-    groupListeners([{ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"remove"},{ele:window, ev:["scroll", "wheel", "touchmove"], fun:stopZoomScroll, action:"remove", opts:{passive:false}}]);
-}
-
 //******************Zoom Stuff******************//
 var evCache = new Array();
 var prevDiff = -1;
 
 //*Generates attaches then removes css animation for when image reaches max or min size
-function sizedOut(){
+function sizedOutAnimation(){
     imageEnlargement.addEventListener("animationend",function removeAnimation(e) {
         imageEnlargement.classList.remove("size-out");
-        imageEnlargement.removeEventListener("animationend", removeAnimation);
-    });
+    }, {once: true});
     imageEnlargement.classList.add("size-out");
+}
+
+function propIsNonZero(prop) {
+    return prop != "" &&  prop != "0px";
+}
+
+function firstIsLonger(first, second) {
+    return first > second;
 }
 
 //*resizing image preview using touch or mouse wheel
@@ -278,7 +302,7 @@ function imageResize(growCondition, shrinkCondition){
     let moveVal = 10;
     if (growCondition) {
         if (containerHeight>=1500 || containerWidth>=1500) {
-            sizedOut();
+            sizedOutAnimation();
             imageArea.addEventListener("pointermove", pointermove_handler);
             return;
         }
@@ -286,10 +310,11 @@ function imageResize(growCondition, shrinkCondition){
         imageContainer.style.height = `${containerHeight + moveVal}px`;
     } else if (shrinkCondition) {
         if (containerHeight<=200 || containerWidth<=200) {
-            sizedOut();
+            sizedOutAnimation();
             imageArea.addEventListener("pointermove", pointermove_handler);
             return;
         }
+        //*This entire if statement checks to see if the image is off center before resizing and then adjusts the top and left values as needed to bring the image back to center as it shrinks
         if (propIsNonZero(imageContainer.style.top) || propIsNonZero(imageContainer.style.left)) {
             let imageBox= imageContainer.getBoundingClientRect();
             let imageAreaBox = imageArea.getBoundingClientRect();
@@ -332,14 +357,6 @@ function imageResize(growCondition, shrinkCondition){
     let recalcRatio = recalcWidth/recalcHeight;
     imageArea.addEventListener("pointermove", pointermove_handler);
     imageContAdjustment(imageProportion, recalcRatio, recalcWidth, recalcHeight);
-}
-
-function propIsNonZero(prop) {
-    return prop != "" &&  prop != "0px";
-}
-
-function firstIsLonger(first, second) {
-    return first > second;
 }
 
 function pointerdown_handler(ev) {
@@ -388,9 +405,11 @@ function pointerup_handler(ev) {
         startingEvCoords.clientY = evCache[0].clientY;
     }
 }
+
 function wheel_handler(ev) {
     imageResize((ev.deltaY > 0),(ev.deltaY < 0));
 }
+
 function remove_event(ev) {
     for(var i=0; i<evCache.length; i++) {
         if (evCache[i].pointerId==ev.pointerId) {
@@ -429,10 +448,14 @@ function moveImage(startingCoords,currentCoords) {
     let imageBox= imageEnlargement.getBoundingClientRect();
     let imageAreaBox = imageArea.getBoundingClientRect();
     imageContainer.style.position = "relative";
+
+    //current > starting = right, down; current - starting = positive;
+    //current < starting = left, up; current - starting = negative
+
     // if imageContainer doesn't currently have left/top assigned, need to assign it and set it to 0
     imageContainer.style.left = imageContainer.style.left || "0px";
     imageContainer.style.top = imageContainer.style.top || "0px";
-    //instructions based on drag direction
+    
     if (xdir == "left" && imageBox.right > imageAreaBox.right) {
         if (imageBox.right-xMovement < imageAreaBox.right) {
             imageContainer.style.left = (imageAreaBox.width - imageBox.width)/2 + "px";
@@ -467,4 +490,7 @@ function moveImage(startingCoords,currentCoords) {
 //******************End Drag Stuff******************//
 //******************End Zoom Stuff******************//
 //******************End Image Preview Section******************//
-groupListeners([{ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"add"},{ele:galleryImages, ev:"click", fun:expandImage, action:"add"}]);
+groupListeners([
+    {ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"add"},
+    {ele:galleryImages, ev:"click", fun:openImagePreview, action:"add"}
+]);
