@@ -1,13 +1,14 @@
 /*
     * This file is divided into sections
     *   Variable declaration - Beginning
-    *   Group listeners function - around line 35
-    *   The section that controls the switching of the different gallery types (or "tabs") - around line 55
-    *   The image preview section - around line 105
+    *   OnLoad image preview opening - around line 35
+    *   Group listeners function - around line 75
+    *   The section that controls the switching of the different gallery types (or "tabs") - around line 90
+    *   The image preview section - around line 150
     *       The image preview section has several distinct parts as well:
-    *       Changing images in preview - around line 110
-    *       Zooming in and out of images - around line 240
-    *       Dragging the image - around line 380
+    *       Changing images in preview - around line 265
+    *       Zooming in and out of images - around line 330
+    *       Dragging the image - around line 474
 */
 //*gallery page elements
 const portfolioNavArray = [...document.getElementById("portfolioSubnav").getElementsByTagName("a")];
@@ -29,6 +30,44 @@ var currentGallery = galleriesArray.filter(gallery => gallery.classList.contains
 var galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
 var lastGalleryIndex = galleryImages.length - 1;
 var imageProportion, currentImageIndex, startingEvCoords = {};
+
+//* Opening image previews on page load- onload function checks for URL parameters, and parses them if they exist
+//* From there the appropriate elements are found and custom events trigger the tab switching and gallery preview opening
+window.onload = function () {
+    if (window.location.search == "") return        
+    parseURL();
+}
+
+function parseURL()      {
+    let params = new URLSearchParams(window.location.search);
+    let imageCode = params.get("image");
+    let imageElement, galleryElement;
+
+    galleryElement = galleriesArray.find(function(arrays) {
+        return [...[...arrays.children][0].children].find(function(item) {
+            if(item.dataset.append == imageCode) {
+                imageElement = item;
+            }
+            return item.dataset.append == imageCode;
+        });
+    });
+    
+    tabSwitchOnOpen(galleryElement);
+    imagePreviewOnOpen(imageElement);   
+}
+
+function imagePreviewOnOpen(imageElement) {
+    imageElement.addEventListener("notClick", openImagePreview, {once:true});
+    imageElement.dispatchEvent(new CustomEvent("notClick", {}));
+}
+
+function tabSwitchOnOpen(galleryElement) {
+    let nextTab = portfolioNavArray.find(function(element) {
+        return element.dataset.gallery == galleryElement.id
+    });
+    nextTab.addEventListener("notClick2", changeGallery, {once:true});
+    nextTab.dispatchEvent(new CustomEvent("notClick2", {}));
+}
 
 //*takes array of objects[{ele:element or array of elements, ev:event or array of events, fun:function, action:"add" or "remove", opts:optional, {} or options object}]
 //*if element or event is an array, function runs through elements first, then events.
@@ -110,9 +149,11 @@ function cleanupAndReset(newGallery) {
 //******************End Tab Switching Section******************//
 //******************Begin Image Preview Section******************//
 function openImagePreview(e) {
+    let newURL;
     let infoNode = e.target.closest(".galleryImage");
+    console.log(infoNode);
     currentImageIndex = galleryImages.indexOf(infoNode);
-
+    
     imagePreview.style.opacity = 0;
     imagePreview.style.display = "flex";
     
@@ -123,9 +164,11 @@ function openImagePreview(e) {
             closeBox.addEventListener("click", closePreview);
         });
     }, {once:true});
-
+    
     imageEnlargement.src = infoNode.dataset.imageFile;
     imageTitle.textContent = infoNode.dataset.imageName; 
+    newURL = `${window.location.href}?image=${infoNode.dataset.append}`
+    history.pushState(null, null, newURL);
 }
 
 async function imageCalcs(e) {
@@ -207,6 +250,7 @@ function finalizeImagePreview(e) {
 
 function closePreview(e) {
     imagePreview.style = previewHeader.style = imageContainer.style = "";
+    history.replaceState(null, null, "portfolio.html");
 
     groupListeners([
         {ele:imageArea, ev:["pointerup","pointercancel","pointerout","pointerleave"], fun: pointerup_handler, action:"remove"},
@@ -246,6 +290,8 @@ function changeImage(e){
 }
 
 function openNewImage() {
+    let newImage = galleryImages[currentImageIndex];
+
     imageEnlargement.style.opacity="0";
     imageEnlargement.classList.remove("image-details-disappear");
 
@@ -261,8 +307,13 @@ function openNewImage() {
     }
     imageContainer.style.width = "auto";
     imageContainer.style.height = "auto";
-    imageEnlargement.src = galleryImages[currentImageIndex].dataset.imageFile;
-    imageTitle.textContent = galleryImages[currentImageIndex].dataset.imageName;
+
+    imageEnlargement.src = newImage.dataset.imageFile;
+    imageTitle.textContent = newImage.dataset.imageName;
+
+    let queryParams = new URLSearchParams(window.location.search);
+    queryParams.set("image",newImage.dataset.append);
+    history.replaceState(null, null, `?${queryParams}`);
 }
 
 function imageChangeWrapUp() {
