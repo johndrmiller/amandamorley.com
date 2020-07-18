@@ -25,11 +25,11 @@ const imagePreviewNavButtons = [...this.document.getElementsByClassName("hitbox"
 const previousButton = imagePreviewNavButtons.filter(item => item.id == "previousButtonImage")[0];
 const nextButton = imagePreviewNavButtons.filter(item => item.id == "nextButtonImage")[0];
 //*page variables
-var currentTab = portfolioNavArray.filter(tab => tab.classList.contains("selectedGallery"))[0];
-var currentGallery = galleriesArray.filter(gallery => gallery.classList.contains("showingGallery"))[0];
-var galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
-var lastGalleryIndex = galleryImages.length - 1;
-var imageProportion, currentImageIndex, startingEvCoords = {};
+let currentTab = portfolioNavArray.filter(tab => tab.classList.contains("selectedGallery"))[0];
+let currentGallery = galleriesArray.filter(gallery => gallery.classList.contains("showingGallery"))[0];
+let galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
+let lastGalleryIndex = galleryImages.length - 1;
+let imageProportion, currentImageIndex, startingEvCoords = {};
 
 //* Opening image previews on page load- onload function checks for URL parameters, and parses them if they exist
 //* From there the appropriate elements are found and custom events trigger the tab switching and gallery preview opening
