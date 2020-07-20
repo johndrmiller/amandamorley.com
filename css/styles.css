@@ -51,6 +51,9 @@
 * {
     box-sizing: border-box;
 }
+html {
+    height: -webkit-fill-available;
+}
 html, body { 
     margin: 0 0 0 0; padding: 0 0 0 0;
     overflow-x: hidden;
@@ -112,7 +115,6 @@ body {
             line-height: 1.42em;
             letter-spacing: .0035em;
             padding-right:20px;
-            margin-top: -18px;
         }
 /*End Global Elements*/
 
@@ -517,9 +519,9 @@ body {
                     margin-top: 0px;
                     margin-bottom:12px;
                 }
-        .aboutPage footer {
+        /* .aboutPage footer {
             margin-top: 23px;
-        }
+        } */
 /*End About Page*/
 @media only screen and (hover: none) {
     .portfolioPage {
