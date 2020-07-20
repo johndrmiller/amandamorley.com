@@ -524,7 +524,7 @@ body {
         } */
 /*End About Page*/
 @media only screen and (hover: none) {
-    .portfolioPage {
+    .portfolioPage, .aboutPage {
         max-height: calc(var(--vh, 1vh)*100);
     }
     #image-details {
