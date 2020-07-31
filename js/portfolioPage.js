@@ -201,7 +201,7 @@ async function imageCalcs(e) {
         imageContainer.style.width = "90%";
     }
 
-    if (window.visualViewport.scale > 1.0) scaleCorrection();
+    if (window.visualViewport && window.visualViewport.scale > 1.0) scaleCorrection();
     
     imContStyle = window.getComputedStyle(imageContainer);
     currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);

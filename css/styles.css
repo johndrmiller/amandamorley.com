@@ -64,6 +64,7 @@ body {
     min-height:100vh;
     min-height: -webkit-fill-available;
     display: flex;
+    flex-shrink: 0;
     flex-direction: column;
     max-width:100%;
     background: url("../images/global/bg/BG_xsmall_L.png") no-repeat left top,
@@ -86,6 +87,7 @@ body {
     nav {
         padding: 1.49vw 2.23vw 0px;
         display:flex;
+        flex-shrink: 0;
         justify-content: center;
         letter-spacing: .005em;
         flex-direction: column;
@@ -107,6 +109,7 @@ body {
             }
     footer {
         display: flex;
+        flex-shrink: 0;
         justify-content: flex-end;
         box-sizing: border-box;
     }
@@ -319,7 +322,6 @@ body {
                 align-items: center;
                 justify-content: center;
                 min-height:0px;
-                height:100%;
                 width:100%;
                 overflow: hidden;
                 grid-column-start: 1;
@@ -393,6 +395,7 @@ body {
             padding-left:4%;
             padding-right:4%;
             display: flex;
+            flex-shrink:0;
             flex-direction: row;
             align-self: flex-start;
             justify-self: center;
