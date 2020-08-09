@@ -15,12 +15,16 @@ export const imagePreviewNavButtons = [...document.getElementsByClassName("hitbo
 export const previousButton = imagePreviewNavButtons.filter(item => item.id == "previousButtonImage")[0];
 export const nextButton = imagePreviewNavButtons.filter(item => item.id == "nextButtonImage")[0];
 //*page variables
-export let currentTab = portfolioNavArray.filter(tab => tab.classList.contains("selectedGallery"))[0];
-export let currentGallery = galleriesArray.filter(gallery => gallery.classList.contains("showingGallery"))[0];
-export let galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
-export let lastGalleryIndex = galleryImages.length - 1;
-export let imageProportion, currentImageIndex, startingEvCoords = {};
-export function modifyVariable(variable, value) {
-    variable = value;
-    console.log(imageProportion);
+const updateableVariable = (val) => {
+    const getVal = () => val;
+    const update = (newVal) => val = newVal;
+    return {getVal, update};
 }
+export const currentTab = updateableVariable(portfolioNavArray.filter(tab => tab.classList.contains("selectedGallery"))[0]);
+export const currentGallery = updateableVariable(galleriesArray.filter(gallery => gallery.classList.contains("showingGallery"))[0]);
+export const galleryImages = updateableVariable([...currentGallery.getVal().getElementsByClassName("galleryImages")[0].children]);
+export const lastGalleryIndex = updateableVariable(galleryImages.getVal().length - 1);
+export const imageProportion = updateableVariable(0); 
+export const currentImageIndex = updateableVariable(undefined);
+export const startingEvCoords = updateableVariable({});
+

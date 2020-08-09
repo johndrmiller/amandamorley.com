@@ -85,13 +85,13 @@ function imageResize(growCondition, shrinkCondition){
     let recalcWidth = parseInt(window.getComputedStyle(imageContainer).getPropertyValue("width"));
     let recalcRatio = recalcWidth/recalcHeight;
     imageArea.addEventListener("pointermove", pointermove_handler);
-    imageContAdjustment(imageProportion, recalcRatio, recalcWidth, recalcHeight);
+    imageContAdjustment(imageProportion.getVal(), recalcRatio, recalcWidth, recalcHeight);
 }
 
 export function pointerdown_handler(ev) {
     evCache.push(ev);
-    startingEvCoords.clientX = ev.clientX;
-    startingEvCoords.clientY = ev.clientY;
+    startingEvCoords.getVal().clientX = ev.clientX;
+    startingEvCoords.getVal().clientY = ev.clientY;
 }
 
 export function pointermove_handler(ev) {
@@ -118,7 +118,7 @@ export function pointermove_handler(ev) {
         let checkSize = sizeCheck();
         if (Object.values(checkSize).some(function (e){return e})) {
             imageContainer.setAttribute("draggable", "true");
-            moveImage(startingEvCoords, currentPos);
+            moveImage(startingEvCoords.getVal(), currentPos);
         } else {
             return
         }

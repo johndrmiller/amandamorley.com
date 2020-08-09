@@ -23,7 +23,7 @@ window.onload = function () {
     parseURL();
 }
 
-function parseURL()      {
+function parseURL() {
     let params = new URLSearchParams(window.location.search);
     let imageCode = params.get("image");
     let imageElement, galleryElement;
@@ -54,8 +54,7 @@ function tabSwitchOnOpen(galleryElement) {
     nextTab.dispatchEvent(new CustomEvent("notClick2", {}));
 }
 
-
 groupListeners([
     {ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"add"},
-    {ele:galleryImages, ev:"click", fun:openImagePreview, action:"add"}
+    {ele:galleryImages.getVal(), ev:"click", fun:openImagePreview, action:"add"}
 ]);

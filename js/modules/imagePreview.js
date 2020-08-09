@@ -1,6 +1,7 @@
 import {groupListeners} from "/js/modules/groupListeners.js";
+
 import {currentImageIndex, galleryImages, imagePreview, imageEnlargement, closeBox, imageTitle,
-        imageProportion, imageContainer, previewHeader, imagePreviewNavButtons, imageArea, modifyVariable
+        imageProportion, imageContainer, previewHeader, imagePreviewNavButtons, imageArea
 } from "/js/modules/HTMLConstants.js";
 import {pointerup_handler, pointerdown_handler, pointermove_handler, wheel_handler} from "/js/modules/imagePreviewZoom.js";
 import {changeImage} from "/js/modules/changeImagePreview.js";
@@ -9,8 +10,7 @@ export function openImagePreview(e) {
     let newURL;
     let infoNode = e.target.closest(".galleryImage");
     console.log(infoNode);
-    modifyVariable(currentImageIndex, galleryImages.indexOf(infoNode));
-    //currentImageIndex = galleryImages.indexOf(infoNode);
+    currentImageIndex.update(galleryImages.getVal().indexOf(infoNode));
     
     imagePreview.style.opacity = 0;
     imagePreview.style.display = "flex";
@@ -35,10 +35,7 @@ export async function imageCalcs(e) {
     let imageAreaHeight = parseInt(imageAreaBox.height);
     let imageAreaWidth = parseInt(imageAreaBox.width);
     let imContStyle, currentRatio, imageHeight, imageWidth;
-    let newImageProportion = imageEnlargement.naturalWidth/imageEnlargement.naturalHeight;
-    console.log(newImageProportion);
-    modifyVariable(imageProportion, newImageProportion);
-    //imageProportion = imageEnlargement.naturalWidth/imageEnlargement.naturalHeight;
+    imageProportion.update(imageEnlargement.naturalWidth/imageEnlargement.naturalHeight);
 
     //*disabling native browser resizing for custom implementation
     groupListeners([
@@ -46,19 +43,19 @@ export async function imageCalcs(e) {
     ]);
     
     //*checking if image is horizontal or vertical, then calculating display w and h of image based on 90% of available width or height
-    console.log(imageProportion);
-    if (imageProportion <= 1) {
+    console.log(imageProportion.getVal());
+    if (imageProportion.getVal() <= 1) {
         imageHeight = imageAreaHeight*0.9;
-        imageWidth = imageProportion*imageHeight;
-    } else if (imageProportion > 1) {
+        imageWidth = imageProportion.getVal()*imageHeight;
+    } else if (imageProportion.getVal() > 1) {
         imageWidth = imageAreaWidth*0.9;
-        imageHeight = imageWidth/imageProportion;
+        imageHeight = imageWidth/imageProportion.getVal();
     }
     
     //*setting height or width of image, checks to make sure full image will fit within previw area
-    if ((imageProportion <= 1 && imageAreaWidth > imageWidth) || (imageProportion > 1 && imageAreaHeight < imageHeight)) {
+    if ((imageProportion.getVal() <= 1 && imageAreaWidth > imageWidth) || (imageProportion.getVal() > 1 && imageAreaHeight < imageHeight)) {
         imageContainer.style.height = "90%";
-    } else if ((imageProportion > 1 && imageAreaHeight > imageHeight) || (imageProportion <= 1 && imageAreaWidth < imageWidth)) {
+    } else if ((imageProportion.getVal() > 1 && imageAreaHeight > imageHeight) || (imageProportion.getVal() <= 1 && imageAreaWidth < imageWidth)) {
         imageContainer.style.width = "90%";
     }
 
@@ -66,7 +63,7 @@ export async function imageCalcs(e) {
     
     imContStyle = window.getComputedStyle(imageContainer);
     currentRatio = parseInt(imContStyle.width)/parseInt(imContStyle.height);
-    imageContAdjustment(imageProportion, currentRatio, imContStyle.width, imContStyle.height);
+    imageContAdjustment(imageProportion.getVal(), currentRatio, imContStyle.width, imContStyle.height);
 
     return new Promise((resolve, reset) => {
         resolve();

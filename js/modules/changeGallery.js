@@ -1,15 +1,15 @@
 import {groupListeners} from "/js/modules/groupListeners.js";
-import {portfolioNavArray, galleryImages, currentTab, galleriesArray, currentGallery, lastGalleryIndex, modifyVariable
+import {portfolioNavArray, galleryImages, currentTab, galleriesArray, currentGallery, lastGalleryIndex
 } from "/js/modules/HTMLConstants.js";
 import {openImagePreview} from "/js/modules/imagePreview.js"
 
 export async function changeGallery(e) {
     const newGallery = await pickNewGallery(e);
-    if (newGallery.clickedTab == currentTab) return
+    if (newGallery.clickedTab == currentTab.getVal()) return
     newGallery.nextGallery.style.opacity = 0;
     groupListeners([
         {ele:portfolioNavArray, ev:"click", fun: changeGallery, action:"remove"},
-        {ele:galleryImages,ev:"click", fun: openImagePreview, action:"remove"}
+        {ele:galleryImages.getVal(),ev:"click", fun: openImagePreview, action:"remove"}
     ]);
     closeOldGallery().then(() => {
         openNewGallery(newGallery.nextGallery);
@@ -25,9 +25,9 @@ function pickNewGallery(e) {
 }
 
 async function closeOldGallery() {
-    currentGallery.classList.add("gallery-fade-out");  
+    currentGallery.getVal().classList.add("gallery-fade-out");  
     return new Promise((resolve, reject) => {
-        currentGallery.addEventListener('animationend', function (e) {
+        currentGallery.getVal().addEventListener('animationend', function (e) {
             resolve();
         }, {once:true});
     });
@@ -43,24 +43,20 @@ async function openNewGallery (nextGallery) {
 }
 
 function cleanupAndReset(newGallery) {
-    currentTab.classList.remove("selectedGallery");
+    currentTab.getVal().classList.remove("selectedGallery");
     newGallery.clickedTab.classList.add("selectedGallery");
     
-    currentGallery.classList.remove("showingGallery", "gallery-fade-out");
+    currentGallery.getVal().classList.remove("showingGallery", "gallery-fade-out");
     newGallery.nextGallery.classList.remove("gallery-fade-in");
 
-    modifyVariable(currentTab, newGallery.clickedTab);
-    //currentTab = newGallery.clickedTab;
-    modifyVariable(currentGallery, newGallery.nextGallery);
-    //currentGallery = newGallery.nextGallery;
-    modifyVariable(galleryImages, [...currentGallery.getElementsByClassName("galleryImages")[0].children]);
-    //galleryImages = [...currentGallery.getElementsByClassName("galleryImages")[0].children];
-    modifyVariable(lastGalleyIndex, galleryImages.length-1);
-    //lastGalleryIndex = galleryImages.length - 1;
-    currentGallery.style = "";
+    currentTab.update(newGallery.clickedTab);
+    currentGallery.update(newGallery.nextGallery);
+    galleryImages.update([...currentGallery.getVal().getElementsByClassName("galleryImages")[0].children]);
+    lastGalleryIndex.update(galleryImages.getVal().length - 1);
+    currentGallery.getVal().style = "";
 
     groupListeners([
         {ele:portfolioNavArray, ev:"click", fun:changeGallery, action:"add"},
-        {ele:galleryImages, ev:"click", fun:openImagePreview, action:"add"}
+        {ele:galleryImages.getVal(), ev:"click", fun:openImagePreview, action:"add"}
     ]);
 }

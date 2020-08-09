@@ -1,6 +1,6 @@
 import {groupListeners} from "/js/modules/groupListeners.js";
 import {imagePreviewNavButtons, previousButton, nextButton, currentImageIndex, lastGalleryIndex, imageEnlargement, galleryImages,
-    imageContainer, imageTitle, modifyVariable
+    imageContainer, imageTitle
 } from "/js/modules/HTMLConstants.js";
 import {imageCalcs} from "/js/modules/imagePreview.js";
 
@@ -11,21 +11,17 @@ export function changeImage(e){
 
     switch (e.currentTarget) {
         case previousButton:
-            if (currentImageIndex == 0) {
-                modifyVariable(currentImageIndex, lastGalleryIndex);
-                //currentImageIndex = lastGalleryIndex;
+            if (currentImageIndex.getVal() == 0) {
+                currentImageIndex.update(lastGalleryIndex.getVal());
             } else {
-                modifyVariable(currentImageIndex, currentImageIndex-1);
-                //currentImageIndex -= 1;
+                currentImageIndex.update(currentImageIndex.getVal()-1);
             }
             break;
         case nextButton:
-            if (currentImageIndex == lastGalleryIndex) {
-                modifyVariable(currentImageIndex, 0)
-                //currentImageIndex = 0;
+            if (currentImageIndex.getVal() == lastGalleryIndex.getVal()) {
+                currentImageIndex.update(0);
             } else {
-                modifyVariable(currentImageIndex, currentImageIndex+1)
-                //currentImageIndex += 1;
+                currentImageIndex.update(currentImageIndex.getVal()+1);
             }
             break;
     }
@@ -35,7 +31,7 @@ export function changeImage(e){
 }
 
 function openNewImage() {
-    let newImage = galleryImages[currentImageIndex];
+    let newImage = galleryImages.getVal()[currentImageIndex.getVal()];
 
     imageEnlargement.style.opacity="0";
     imageEnlargement.classList.remove("image-details-disappear");
