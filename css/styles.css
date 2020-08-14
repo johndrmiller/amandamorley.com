@@ -122,6 +122,9 @@ body {
 /*End Global Elements*/
 
 /*Home page specific*/
+body.homePage {
+    min-height: 100vh;
+}
     .mainContent {
         display:flex;
         align-items:stretch;
