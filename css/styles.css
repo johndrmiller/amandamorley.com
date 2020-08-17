@@ -71,11 +71,14 @@ body {
                 url("../images/global/bg/BG_xsmall_R.png") no-repeat right top, 
                 #F6EEE4;
     background-size: 27.2vw auto;  
-    font-family: "Arima Madurai", cursive;
+    font-family: "Arima Madurai", "Arial", "Helvetica", sans-serif;
     font-weight: 400;
     color:#6B331D;    
 }
 
+    html body a {
+        color: #6B331D;
+    }
     html body a:-webkit-any-link, html body a:visited, html body a:active {
         text-decoration: none;
         color:#6B331D;
