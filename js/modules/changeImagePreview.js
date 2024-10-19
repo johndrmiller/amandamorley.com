@@ -1,6 +1,6 @@
 import {groupListeners} from "/js/modules/groupListeners.js";
 import {imagePreviewNavButtons, previousButton, nextButton, currentImageIndex, lastGalleryIndex, imageEnlargement, galleryImages,
-    imageContainer, imageTitle
+    imageContainer, imageTitle, purchaseLink
 } from "/js/modules/HTMLConstants.js";
 import {imageCalcs} from "/js/modules/imagePreview.js";
 
@@ -51,6 +51,19 @@ function openNewImage() {
 
     imageEnlargement.src = newImage.dataset.imageFile;
     imageTitle.textContent = newImage.dataset.imageName;
+    if ("shopLink" in newImage.dataset) {
+        console.log("yes");
+        if (purchaseLink.classList.contains("hide")) {
+            purchaseLink.classList.remove("hide");
+        }
+        let anchor = purchaseLink.querySelector("a");
+        anchor.href = newImage.dataset.shopLink;
+    } else {
+        console.log("no");
+        if (!purchaseLink.classList.contains("hide")){
+            purchaseLink.classList.add("hide");
+        }
+    }
 
     let queryParams = new URLSearchParams(window.location.search);
     queryParams.set("image",newImage.dataset.append);

@@ -7,6 +7,7 @@ export const galleriesArray = [...document.getElementsByClassName("gallery")];
 export const imagePreview = document.getElementById("image-details");
 export const previewHeader = imagePreview.getElementsByTagName("header")[0];
 export const imageTitle = previewHeader.querySelector("#image-title");
+export const purchaseLink = previewHeader.querySelector("#purchase-link");
 export const closeBox = previewHeader.querySelector("#closebox");
 export const imageArea = imagePreview.querySelector("#image-display");
 export const imageContainer = imageArea.querySelector("#image-container");

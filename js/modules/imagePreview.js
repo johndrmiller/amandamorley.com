@@ -1,13 +1,13 @@
 import {groupListeners} from "/js/modules/groupListeners.js";
 
 import {currentImageIndex, galleryImages, imagePreview, imageEnlargement, closeBox, imageTitle,
-        imageProportion, imageContainer, previewHeader, imagePreviewNavButtons, imageArea
+        imageProportion, imageContainer, previewHeader, imagePreviewNavButtons, imageArea, purchaseLink
 } from "/js/modules/HTMLConstants.js";
 import {pointerup_handler, pointerdown_handler, pointermove_handler, wheel_handler} from "/js/modules/imagePreviewZoom.js";
 import {changeImage} from "/js/modules/changeImagePreview.js";
 
 export function openImagePreview(e) {
-    let newURL;
+    let newURL, URLParams;
     let infoNode = e.target.closest(".galleryImage");
     console.log(infoNode);
     currentImageIndex.update(galleryImages.getVal().indexOf(infoNode));
@@ -25,6 +25,24 @@ export function openImagePreview(e) {
     
     imageEnlargement.src = infoNode.dataset.imageFile;
     imageTitle.textContent = infoNode.dataset.imageName; 
+    //if image has a shop-link make the element visible and swap in the URL
+    if ("shopLink" in infoNode.dataset) {
+        console.log("yes");
+        if (purchaseLink.classList.contains("hide")) {
+            purchaseLink.classList.remove("hide");
+        }
+        let anchor = purchaseLink.querySelector("a");
+        anchor.href = infoNode.dataset.shopLink;
+    } else {
+        console.log("no");
+        if (!purchaseLink.classList.contains("hide")){
+            purchaseLink.classList.add("hide");
+        }
+    }
+    URLParams = new URLSearchParams(window.location.search);
+    if (URLParams.has("image") && URLParams.get("image")==infoNode.dataset.append) {
+        return;
+    };
     newURL = `${window.location.href}?image=${infoNode.dataset.append}`
     history.pushState(null, null, newURL);
 }
