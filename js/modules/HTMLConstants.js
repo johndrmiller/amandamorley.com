@@ -3,6 +3,7 @@
 //*gallery page elements
 export const portfolioNavArray = [...document.getElementById("portfolioSubnav").getElementsByTagName("a")];
 export const galleriesArray = [...document.getElementsByClassName("gallery")];
+export const shopLink = document.querySelector("#shopLink");
 //*image preview elements
 export const imagePreview = document.getElementById("image-details");
 export const previewHeader = imagePreview.getElementsByTagName("header")[0];

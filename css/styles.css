@@ -447,15 +447,20 @@ body.homePage {
                 text-decoration: underline !important;
                 font-weight: bold;
             }
-        .instructions {
+        #galleryLabels {
             font-weight:300;
             width:100vw;
             align-self: flex-start;
             text-align: center;
-            height: 1.643em;
-            margin-top: 5px;
+            /* height: 1.643em; */
+            margin-top: 15px;
             margin-bottom: 5px;
         }
+            #shopLink {
+                margin-bottom: 10px;
+                font-size: 1.25em;
+                text-decoration: underline;
+            }
         .gallery {
             width: 100vw;
             display: none;
@@ -763,7 +768,7 @@ body.homePage {
 /*Portfolio Page Specific*/
     #PageLinks a.portfolioLink {
         background-color: inherit;
-        color: #30170E;
+        color: #6B331D;
         text-decoration: underline;
         padding: 0;
     }
@@ -779,10 +784,14 @@ body.homePage {
                 color:#6B331D;
                 margin: 6px 0px;
             }
-            .instructions {
-                font-size: 1.5em;
+            #galleryLabels {
+                font-size: 1.25em;
                 margin-top:15px;
             }
+                #shopLink {
+                    margin-bottom: 15px;
+                    font-size: 1.25em;
+                }
             html body a.selectedGallery:-webkit-any-link  {
                 text-decoration: underline !important;
                 font-weight: bold;
@@ -818,7 +827,7 @@ body {
 /*Portfolio Page Specific*/   
     #PageLinks a.portfolioLink {
         background-color: inherit;
-        color: #30170E;
+        color: #6B331D;
         text-decoration: underline;
         padding: 0;
     }
@@ -833,11 +842,14 @@ body {
                 color:#6B331D;
                 margin: 6px 0px;
             }
-            .instructions {
+            #galleryLabels {
                 font-size: 1.5em;
                 margin-top:20px;
                 margin-bottom:10px;
             }
+                #shopLink {
+                    margin-bottom: 20px;
+                }
             html body a.selectedGallery:-webkit-any-link  {
                 text-decoration: underline !important;
                 font-weight: bold;
@@ -875,7 +887,7 @@ body {
             padding-left: 290px;
             padding-right:290px;
         }
-            .instructions {
+            #galleryLabels {
                 margin-top:15px;
             }
             .galleryImages {
@@ -940,9 +952,12 @@ body {
             padding-right: 350px;
             font-size: 2em;
         }
-            .instructions {
+            #galleryLabels {
                 margin-top:25px;
             }
+                #shopLink {
+                    margin-bottom: 25px;
+                }
             .galleryImages {
                 width: 1200px;
             }

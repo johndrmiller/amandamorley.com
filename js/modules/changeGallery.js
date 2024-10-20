@@ -1,5 +1,5 @@
 import {groupListeners} from "/js/modules/groupListeners.js";
-import {portfolioNavArray, galleryImages, currentTab, galleriesArray, currentGallery, lastGalleryIndex
+import {portfolioNavArray, galleryImages, currentTab, galleriesArray, currentGallery, lastGalleryIndex, shopLink
 } from "/js/modules/HTMLConstants.js";
 import {openImagePreview} from "/js/modules/imagePreview.js"
 
@@ -45,6 +45,18 @@ async function openNewGallery (nextGallery) {
 function cleanupAndReset(newGallery) {
     currentTab.getVal().classList.remove("selectedGallery");
     newGallery.clickedTab.classList.add("selectedGallery");
+    console.log(newGallery.nextGallery.id);
+
+    if (newGallery.nextGallery.id === "new-gallery"){
+        console.log(shopLink);
+        if (shopLink.classList.contains("hide")){
+            shopLink.classList.remove("hide");
+        }
+    } else {
+        if (!shopLink.classList.contains("hide")){
+            shopLink.classList.add("hide");
+        }
+    }
     
     currentGallery.getVal().classList.remove("showingGallery", "gallery-fade-out");
     newGallery.nextGallery.classList.remove("gallery-fade-in");

@@ -1,6 +1,6 @@
 import {groupListeners} from "/js/modules/groupListeners.js";
 import {changeGallery} from "/js/modules/changeGallery.js";
-import {galleriesArray, portfolioNavArray, galleryImages} from "/js/modules/HTMLConstants.js";
+import {galleriesArray, portfolioNavArray, galleryImages, shopLink} from "/js/modules/HTMLConstants.js";
 import {openImagePreview} from "/js/modules/imagePreview.js";
 
 /*
