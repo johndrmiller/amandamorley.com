@@ -530,8 +530,8 @@ body.homePage {
             }
                 
                 #email-link {
-                    width: 100%;
-                    text-align: center;
+                    /* width: 100%;
+                    text-align: center; */
                 }
                     #email-link a {
                         text-decoration: underline;
@@ -541,6 +541,9 @@ body.homePage {
                     flex-direction: column;
                     overflow-y: auto;
                 }
+                    #bioContent {
+                        margin-top: 24px;
+                    }
                 #profile-picture {
                     margin: 14px 10px 0 0;
                     float: left;
@@ -559,7 +562,7 @@ body.homePage {
                 }
                 #bioText p {
                     margin-top: 0px;
-                    margin-bottom:12px;
+                    margin-bottom:20px;
                 }
         /* .aboutPage footer {
             margin-top: 23px;
